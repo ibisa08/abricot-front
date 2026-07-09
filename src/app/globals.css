@@ -6,9 +6,16 @@
    Design tokens Abricot — source de vérité (docs/DESIGN.md §2)
    ============================================================ */
 :root {
-  /* Palette de marque */
-  --color-primary: #ea580c; /* orange Abricot (logo, liens, accents, ✦ IA) */
-  --color-primary-hover: #c2410c;
+  /* Palette de marque
+     ⚠️ Contraste WCAG AA : l'orange d'origine #EA580C échoue en texte normal sur
+     blanc (3.56:1 < 4.5). On retient donc #C2410C (5.18:1) comme orange
+     "primary" pour tout ce qui porte du TEXTE / des boutons pleins (liens,
+     badges, onglet actif, bouton accent → blanc lisible). L'orange vif d'origine
+     est conservé dans `--color-primary-bright`, réservé aux éléments GRAPHIQUES
+     ou GRANDS (logo, gros titres auth) où le seuil AA est de 3:1. */
+  --color-primary: #c2410c; /* orange accessible (liens, accents, ✦ IA, focus) */
+  --color-primary-hover: #9a3412; /* survol (7.31:1) */
+  --color-primary-bright: #ea580c; /* orange vif — logo + gros titres uniquement */
   --color-primary-soft: #fff1e9; /* fond onglet actif / badge "Propriétaire" */
   --color-ink: #1a1a1a; /* boutons d'action pleins + texte fort */
   --color-ink-hover: #000000;
@@ -16,17 +23,17 @@
   --color-surface: #ffffff; /* cartes, navbar, modales */
   --color-border: #ececec;
   --color-text: #1a1a1a;
-  --color-text-muted: #6b7280;
+  --color-text-muted: #616872; /* gris texte AA (5.17:1 sur le fond de page) */
 
-  /* Badges de statut */
+  /* Badges de statut (couleurs de texte assombries pour l'AA sur leurs fonds) */
   --todo-bg: #ffe4e1;
-  --todo-fg: #e5484d; /* À faire  (TODO) */
+  --todo-fg: #c01827; /* À faire  (TODO) — 5.13:1 sur todo-bg, 6.17:1 sur blanc */
   --doing-bg: #fef3c7;
-  --doing-fg: #b45309; /* En cours (IN_PROGRESS) */
+  --doing-fg: #b45309; /* En cours (IN_PROGRESS) — 4.51:1 sur doing-bg */
   --done-bg: #dcfce7;
-  --done-fg: #15803d; /* Terminée (DONE) */
+  --done-fg: #15803d; /* Terminée (DONE) — 4.57:1 sur done-bg */
   --cancel-bg: #f1f1f3;
-  --cancel-fg: #6b7280; /* Annulée  (CANCELLED) */
+  --cancel-fg: #616872; /* Annulée  (CANCELLED) — 4.99:1 sur cancel-bg */
 }
 
 /* ============================================================

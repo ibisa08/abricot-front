@@ -32,6 +32,13 @@ export default function RootLayout({
   return (
     <html lang="fr" className={`${poppins.variable} ${inter.variable} h-full`}>
       <body className="flex min-h-full flex-col">
+        {/* Lien d'évitement (WCAG 2.4.1) : premier élément focusable de la page. */}
+        <a
+          href="#main-content"
+          className="sr-only z-[100] rounded-lg bg-ink px-4 py-2 text-sm font-medium text-white focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+        >
+          Aller au contenu principal
+        </a>
         <Providers>{children}</Providers>
       </body>
     </html>

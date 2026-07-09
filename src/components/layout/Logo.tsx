@@ -21,7 +21,11 @@ export function Logo({ tone = "primary", height = 24, className }: LogoProps) {
   return (
     <span
       aria-hidden="true"
-      className={cn("inline-block shrink-0", tone === "primary" ? "bg-primary" : "bg-ink", className)}
+      className={cn(
+        "inline-block shrink-0",
+        tone === "primary" ? "bg-primary-bright" : "bg-ink",
+        className,
+      )}
       style={{
         height,
         width: height * LOGO_RATIO,

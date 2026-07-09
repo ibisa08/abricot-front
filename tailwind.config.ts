@@ -16,8 +16,9 @@ const config: Config = {
       colors: {
         // Palette de marque
         primary: {
-          DEFAULT: "var(--color-primary)", // #EA580C orange Abricot
-          hover: "var(--color-primary-hover)", // #C2410C
+          DEFAULT: "var(--color-primary)", // #C2410C orange accessible (texte/boutons)
+          hover: "var(--color-primary-hover)", // #9A3412
+          bright: "var(--color-primary-bright)", // #EA580C orange vif (logo, gros titres)
           soft: "var(--color-primary-soft)", // #FFF1E9
         },
         ink: {

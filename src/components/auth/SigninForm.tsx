@@ -59,7 +59,7 @@ export function SigninForm() {
 
   return (
     <div className="w-full max-w-sm">
-      <h1 className="font-heading text-4xl font-bold text-primary">Inscription</h1>
+      <h1 className="font-heading text-4xl font-bold text-primary-bright">Inscription</h1>
 
       <form onSubmit={handleSubmit(onSubmit)} noValidate className="mt-8 space-y-5">
         {formError && (

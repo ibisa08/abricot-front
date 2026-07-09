@@ -44,8 +44,9 @@ const IS_DEV = process.env.NODE_ENV !== "production";
 /**
  * Modale de génération de tâches par IA (UI complète, seam prêt pour l'Étape 6).
  * Phase « input » : prompt → POST /api/ai/generate-tasks. Tant que la route
- * renvoie AI_NOT_IMPLEMENTED (501), on affiche un état « bientôt disponible »
- * sans casser l'app. Phase « review » : revue/édition des tâches proposées puis
+ * renvoie le code métier AI_NOT_IMPLEMENTED (en HTTP 200, pour ne pas polluer la
+ * console), on affiche un état « bientôt disponible » sans casser l'app ni
+ * logger d'erreur. Phase « review » : revue/édition des tâches proposées puis
  * commit réel via POST /projects/:id/tasks.
  */
 export function AiGenerateModal({ projectId, open, onOpenChange }: AiGenerateModalProps) {
@@ -92,9 +93,13 @@ export function AiGenerateModal({ projectId, open, onOpenChange }: AiGenerateMod
         setProposed(json.data.tasks);
         setPhase("review");
         setState("idle");
-      } else if (res.status === 501 || json?.code === "AI_NOT_IMPLEMENTED") {
+      } else if (json?.code === "AI_NOT_IMPLEMENTED") {
+        // Cas MÉTIER attendu tant que l'Étape 6 n'est pas branchée : ce n'est
+        // pas une erreur → aucun console.error, on bascule sur « unavailable ».
+        // La route répond en 200 pour garder la console du navigateur propre.
         setState("unavailable");
       } else {
+        // Vrai échec applicatif (500, quota, réponse malformée…).
         setState("error");
         setErrorMessage(json?.message ?? "Le service IA est momentanément indisponible.");
       }

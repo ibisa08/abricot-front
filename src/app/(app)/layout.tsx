@@ -10,7 +10,13 @@ export default function AppLayout({ children }: { children: ReactNode }) {
   return (
     <>
       <Navbar />
-      <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8 sm:px-6">{children}</main>
+      <main
+        id="main-content"
+        tabIndex={-1}
+        className="mx-auto w-full max-w-6xl flex-1 px-4 py-8 focus:outline-none sm:px-6"
+      >
+        {children}
+      </main>
       <Footer />
     </>
   );
