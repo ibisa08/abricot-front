@@ -106,3 +106,29 @@ export async function register(input: RegisterInput): Promise<User> {
 export async function logout(): Promise<void> {
   await request<Record<string, never>>("/api/auth/logout", "POST");
 }
+
+/* ------------------------------------------------------------------ */
+/* Mise en forme des erreurs pour l'UI                                 */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Message utilisateur à partir d'une erreur. Le back renvoie déjà des messages
+ * FR corrects ; on garantit néanmoins un libellé clair par code d'erreur au cas
+ * où le message serait absent (codes notables : docs/BACKEND_API.md).
+ */
+export function toUserMessage(err: unknown): string {
+  if (err instanceof ApiError) {
+    if (err.message) return err.message;
+    switch (err.code) {
+      case "INVALID_CREDENTIALS":
+        return "Email ou mot de passe incorrect.";
+      case "EMAIL_ALREADY_EXISTS":
+        return "Cet email est déjà utilisé.";
+      case "INVALID_CURRENT_PASSWORD":
+        return "Le mot de passe actuel est incorrect.";
+      default:
+        return "Une erreur est survenue. Réessayez.";
+    }
+  }
+  return "Une erreur est survenue. Réessayez.";
+}

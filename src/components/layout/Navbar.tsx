@@ -41,8 +41,12 @@ export function Navbar() {
         className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6"
       >
         {/* Logo → retour dashboard */}
-        <Link href="/dashboard" aria-label="Abricot — Tableau de bord">
-          <Logo tone="primary" />
+        <Link
+          href="/dashboard"
+          aria-label="Abricot — Tableau de bord"
+          className="inline-flex items-center rounded-md"
+        >
+          <Logo tone="primary" height={20} />
         </Link>
 
         {/* Liens centraux */}
