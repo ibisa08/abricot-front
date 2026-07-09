@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import * as Tabs from "@radix-ui/react-tabs";
 import { Plus, SquareCheck, Calendar, Inbox, RotateCw } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { useAssignedTasks, useCurrentUser } from "@/lib/queries";
 import { Button } from "@/components/ui/Button";
+import { ProjectFormModal } from "@/components/projects/ProjectFormModal";
 import { TaskList } from "./TaskList";
 import { TaskBoard } from "./TaskBoard";
 
@@ -28,6 +29,7 @@ export interface DashboardClientProps {
 export function DashboardClient({ initialView = "liste" }: DashboardClientProps) {
   const { data: user } = useCurrentUser();
   const { data: tasks, isLoading, isError, refetch, isFetching } = useAssignedTasks();
+  const [createOpen, setCreateOpen] = useState(false);
 
   // Erreur de chargement → toast (une fois par passage en erreur).
   useEffect(() => {
@@ -37,11 +39,6 @@ export function DashboardClient({ initialView = "liste" }: DashboardClientProps)
   }, [isError]);
 
   const greetingName = user?.name?.trim() || user?.email || "";
-
-  function handleCreateProject() {
-    // TODO (Prompt 3) : ouvrir <CreateProjectModal> (POST /projects).
-    toast.info("La création de projet arrive au prochain lot.");
-  }
 
   /**
    * États partagés par les deux vues : squelette / erreur / vide.
@@ -90,11 +87,14 @@ export function DashboardClient({ initialView = "liste" }: DashboardClientProps)
             tâches
           </p>
         </div>
-        <Button variant="ink" onClick={handleCreateProject} className="shrink-0">
+        <Button variant="ink" onClick={() => setCreateOpen(true)} className="shrink-0">
           <Plus className="h-4 w-4" aria-hidden="true" />
           Créer un projet
         </Button>
       </header>
+
+      <ProjectFormModal mode="create" open={createOpen} onOpenChange={setCreateOpen} />
+
 
       {/* Bascule de vues + contenus */}
       <Tabs.Root defaultValue={initialView} className="mt-8">

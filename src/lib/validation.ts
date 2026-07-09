@@ -71,6 +71,28 @@ export type ProfileValues = z.infer<typeof profileSchema>;
 /* Changement de mot de passe                                         */
 /* ------------------------------------------------------------------ */
 
+/* ------------------------------------------------------------------ */
+/* Projet (création / édition)                                        */
+/* ------------------------------------------------------------------ */
+
+export const projectSchema = z.object({
+  name: z
+    .string()
+    .trim()
+    .min(2, "Le titre doit faire au moins 2 caractères.")
+    .max(100, "Le titre ne peut pas dépasser 100 caractères."),
+  description: z
+    .string()
+    .trim()
+    .min(1, "La description est requise.")
+    .max(500, "La description ne peut pas dépasser 500 caractères."),
+});
+export type ProjectValues = z.infer<typeof projectSchema>;
+
+/* ------------------------------------------------------------------ */
+/* Changement de mot de passe                                         */
+/* ------------------------------------------------------------------ */
+
 export const passwordChangeSchema = z
   .object({
     currentPassword: z.string().min(1, "Le mot de passe actuel est requis."),
