@@ -1,6 +1,19 @@
 /**
- * Helpers de formatage partagés (noms, initiales…).
+ * Helpers de formatage partagés (noms, initiales, dates…).
  */
+import { format, parseISO } from "date-fns";
+import { fr } from "date-fns/locale";
+
+/**
+ * Formate une échéance ISO en date courte française : « 9 mars ».
+ * Renvoie `null` si la date est absente ou invalide (le champ méta est alors masqué).
+ */
+export function formatDueDate(iso: string | null | undefined): string | null {
+  if (!iso) return null;
+  const date = parseISO(iso);
+  if (Number.isNaN(date.getTime())) return null;
+  return format(date, "d MMMM", { locale: fr });
+}
 
 /**
  * Initiales (2 lettres max) à partir d'un nom complet ou d'un email.
