@@ -15,6 +15,14 @@ export function formatDueDate(iso: string | null | undefined): string | null {
   return format(date, "d MMMM", { locale: fr });
 }
 
+/** Date + heure française : « 23 mars, 11:20 » (fil de commentaires). */
+export function formatDateTime(iso: string | null | undefined): string {
+  if (!iso) return "";
+  const date = parseISO(iso);
+  if (Number.isNaN(date.getTime())) return "";
+  return format(date, "d MMMM, HH:mm", { locale: fr });
+}
+
 /**
  * Initiales (2 lettres max) à partir d'un nom complet ou d'un email.
  * "Alice Dupont" → "AD" ; "bob@example.com" → "BO".

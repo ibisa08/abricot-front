@@ -9,6 +9,7 @@ export const queryKeys = {
   currentUser: ["current-user"] as const,
   assignedTasks: ["assigned-tasks"] as const,
   projects: ["projects"] as const,
+  project: (id: string) => ["project", id] as const,
   projectTasks: (id: string) => ["project-tasks", id] as const,
   userSearch: (query: string) => ["user-search", query] as const,
 };
@@ -54,9 +55,21 @@ export function useProjects() {
   });
 }
 
+/** Détail d'un projet (`GET /projects/:id`) : header, membres, `userRole`. */
+export function useProject(projectId: string) {
+  return useQuery({
+    queryKey: queryKeys.project(projectId),
+    queryFn: async () => {
+      const { project } = await api.get<{ project: Project }>(`/projects/${projectId}`);
+      return project;
+    },
+  });
+}
+
 /**
- * Tâches d'un projet (`GET /projects/:id/tasks`) — sert à calculer la
- * progression des cartes. Parallélisé + caché par React Query (une requête/carte).
+ * Tâches d'un projet (`GET /projects/:id/tasks`) — forme complète (assignés +
+ * commentaires). Sert à la progression des cartes ET à la page détail projet.
+ * Parallélisé + caché par React Query.
  */
 export function useProjectTasks(projectId: string, enabled = true) {
   return useQuery({

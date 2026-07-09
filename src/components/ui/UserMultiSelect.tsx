@@ -21,6 +21,11 @@ export interface UserMultiSelectProps {
   value: SelectedUser[];
   onChange: (users: SelectedUser[]) => void;
   placeholder?: string;
+  /**
+   * Liste fermée de candidats (ex. membres d'un projet pour les assignés).
+   * Fournie → filtrage local, pas d'appel `/users/search`. Absente → recherche back.
+   */
+  options?: SelectedUser[];
   /** Id de l'élément déclencheur (pour lier un `<label htmlFor>`). */
   id?: string;
   "aria-describedby"?: string;
@@ -46,6 +51,7 @@ export function UserMultiSelect({
   value,
   onChange,
   placeholder = "Choisir un ou plusieurs collaborateurs",
+  options,
   id,
   "aria-describedby": ariaDescribedBy,
 }: UserMultiSelectProps) {
@@ -55,10 +61,22 @@ export function UserMultiSelect({
   const [activeIndex, setActiveIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  const isLocal = options !== undefined;
   const debouncedTerm = useDebounced(term, 300);
-  // Le back exige ≥ 2 caractères ; on ne lance pas de requête garantie vide.
+  // Recherche back : ≥ 2 caractères ; en mode local on filtre sans requête.
   const canSearch = debouncedTerm.trim().length >= 2;
-  const { data: results = [], isFetching } = useUserSearch(open && canSearch ? debouncedTerm : "");
+  const { data: searchResults = [], isFetching } = useUserSearch(
+    !isLocal && open && canSearch ? debouncedTerm : "",
+  );
+
+  const results = useMemo(() => {
+    if (!isLocal) return searchResults;
+    const q = debouncedTerm.trim().toLowerCase();
+    if (!q) return options ?? [];
+    return (options ?? []).filter(
+      (u) => (u.name ?? "").toLowerCase().includes(q) || u.email.toLowerCase().includes(q),
+    );
+  }, [isLocal, searchResults, options, debouncedTerm]);
 
   /** Clé d'identité selon le mode. */
   const keyOf = (u: SelectedUser) => (mode === "emails" ? u.email : u.id);
@@ -165,7 +183,7 @@ export function UserMultiSelect({
             value={term}
             onChange={(e) => setTerm(e.target.value)}
             onKeyDown={onInputKeyDown}
-            placeholder="Rechercher par nom ou email…"
+            placeholder={isLocal ? "Filtrer les membres…" : "Rechercher par nom ou email…"}
             className="h-9 w-full rounded-lg border border-border bg-surface px-3 text-sm text-text outline-none placeholder:text-text-muted focus-visible:border-primary"
           />
 
@@ -177,14 +195,16 @@ export function UserMultiSelect({
               </li>
             )}
 
-            {!isFetching && !canSearch && (
+            {!isFetching && !isLocal && !canSearch && (
               <li className="px-2 py-2 text-sm text-text-muted">
                 Saisissez au moins 2 caractères pour rechercher.
               </li>
             )}
 
-            {!isFetching && canSearch && results.length === 0 && (
-              <li className="px-2 py-2 text-sm text-text-muted">Aucun utilisateur trouvé.</li>
+            {!isFetching && (isLocal || canSearch) && results.length === 0 && (
+              <li className="px-2 py-2 text-sm text-text-muted">
+                {isLocal ? "Aucun membre disponible." : "Aucun utilisateur trouvé."}
+              </li>
             )}
 
             {!isFetching &&

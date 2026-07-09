@@ -93,6 +93,36 @@ export type ProjectValues = z.infer<typeof projectSchema>;
 /* Changement de mot de passe                                         */
 /* ------------------------------------------------------------------ */
 
+/* ------------------------------------------------------------------ */
+/* Tâche (création / édition)                                         */
+/* ------------------------------------------------------------------ */
+
+export const taskSchema = z.object({
+  title: z
+    .string()
+    .trim()
+    .min(2, "Le titre doit faire au moins 2 caractères.")
+    .max(200, "Le titre ne peut pas dépasser 200 caractères."),
+  description: z
+    .string()
+    .trim()
+    .min(1, "La description est requise.")
+    .max(1000, "La description ne peut pas dépasser 1000 caractères."),
+  // `<input type="date">` renvoie "yyyy-mm-dd" ; requis côté front.
+  dueDate: z.string().min(1, "L'échéance est requise."),
+});
+export type TaskValues = z.infer<typeof taskSchema>;
+
+/** Contenu de commentaire (1–2000 caractères, cf. BACKEND_API.md). */
+export const commentSchema = z.object({
+  content: z
+    .string()
+    .trim()
+    .min(1, "Le commentaire ne peut pas être vide.")
+    .max(2000, "Le commentaire ne peut pas dépasser 2000 caractères."),
+});
+export type CommentValues = z.infer<typeof commentSchema>;
+
 export const passwordChangeSchema = z
   .object({
     currentPassword: z.string().min(1, "Le mot de passe actuel est requis."),
