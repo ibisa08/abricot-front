@@ -3,15 +3,12 @@ import type { NextRequest } from "next/server";
 import { AUTH_COOKIE } from "@/lib/auth";
 
 /**
- * Garde de routes du BFF.
- *
- * ⚠️ Next.js 16 : le "Middleware" est renommé "Proxy" (même fonctionnalité).
- * Le fichier doit s'appeler `proxy.ts` et exporter une fonction `proxy`.
+ * Garde de routes du BFF (middleware Next.js).
  *
  * Règles :
- *  - Route privée sans cookie   → redirect /login
+ *  - Route privée sans cookie      → redirect /login
  *  - /login ou /signin AVEC cookie → redirect /dashboard
- *  - /login, /signin et /api/*   restent publics.
+ *  - /login, /signin et /api/*     restent publics.
  *
  * La vraie autorité reste le back : tout 401 renvoyé par le proxy API
  * déclenche un logout + redirect côté client.
@@ -20,7 +17,7 @@ import { AUTH_COOKIE } from "@/lib/auth";
 /** Routes publiques (pas de garde). */
 const PUBLIC_PATHS = ["/login", "/signin"];
 
-export function proxy(request: NextRequest): NextResponse {
+export function middleware(request: NextRequest): NextResponse {
   const { pathname } = request.nextUrl;
   const hasToken = Boolean(request.cookies.get(AUTH_COOKIE)?.value);
   const isPublic = PUBLIC_PATHS.includes(pathname);

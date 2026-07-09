@@ -83,7 +83,7 @@ Fichiers :
 - `src/app/api/auth/logout/route.ts` (POST) : supprime le cookie.
 - `src/app/api/backend/[...path]/route.ts` : **proxy générique authentifié** (GET/POST/PUT/DELETE) qui lit le cookie, ajoute `Authorization: Bearer …`, et forwarde vers `${BACKEND_URL}/<path>`. Le client appelle donc `/api/backend/projects`, `/api/backend/projects/:id/tasks`, etc.
 - `src/lib/api.ts` : petit client typé (`api.get/post/put/del`) qui tape `/api/backend/*` et déballe l'enveloppe `{success,data,message}`.
-- `src/middleware.ts` : garde de routes — pas de cookie sur une route privée → redirect `/login` ; cookie présent sur `/login`|`/signin` → redirect `/dashboard`. (La vraie autorité reste le back : tout 401 renvoyé par le proxy déclenche un logout + redirect.)
+- `src/middleware.ts` : garde de routes (middleware Next.js — `export function middleware(request: NextRequest)` + `config.matcher`) — pas de cookie sur une route privée → redirect `/login` ; cookie présent sur `/login`|`/signin` → redirect `/dashboard`. (La vraie autorité reste le back : tout 401 renvoyé par le proxy API `/api/backend/*` déclenche un logout + redirect.)
 - `.env.local` : `BACKEND_URL=http://localhost:8000`.
 
 > L'IA (Étape 6) suivra le même principe : `src/app/api/ai/generate-tasks/route.ts` côté serveur pour ne jamais exposer la clé LLM. Stubbé pour l'instant.
