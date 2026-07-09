@@ -1,26 +1,63 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
+/* ============================================================
+   Design tokens Abricot — source de vérité (docs/DESIGN.md §2)
+   ============================================================ */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Palette de marque */
+  --color-primary: #ea580c; /* orange Abricot (logo, liens, accents, ✦ IA) */
+  --color-primary-hover: #c2410c;
+  --color-primary-soft: #fff1e9; /* fond onglet actif / badge "Propriétaire" */
+  --color-ink: #1a1a1a; /* boutons d'action pleins + texte fort */
+  --color-ink-hover: #000000;
+  --color-bg: #f5f5f7; /* fond de page gris très clair */
+  --color-surface: #ffffff; /* cartes, navbar, modales */
+  --color-border: #ececec;
+  --color-text: #1a1a1a;
+  --color-text-muted: #6b7280;
+
+  /* Badges de statut */
+  --todo-bg: #ffe4e1;
+  --todo-fg: #e5484d; /* À faire  (TODO) */
+  --doing-bg: #fef3c7;
+  --doing-fg: #b45309; /* En cours (IN_PROGRESS) */
+  --done-bg: #dcfce7;
+  --done-fg: #15803d; /* Terminée (DONE) */
+  --cancel-bg: #f1f1f3;
+  --cancel-fg: #6b7280; /* Annulée  (CANCELLED) */
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* ============================================================
+   Reset léger + base de page
+   ============================================================ */
+@layer base {
+  * {
+    @apply border-border;
   }
-}
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    @apply bg-bg font-sans text-text antialiased;
+    min-height: 100dvh;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-heading;
+  }
+
+  /* Anneau de focus accessible et cohérent (WCAG AA) */
+  :focus-visible {
+    @apply outline-none ring-2 ring-primary ring-offset-2 ring-offset-bg;
+  }
 }
