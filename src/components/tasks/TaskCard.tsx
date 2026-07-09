@@ -103,9 +103,11 @@ export function TaskCard({ task, variant = "list", className }: TaskCardProps) {
     );
   }
 
-  // variant === "list"
+  // variant === "list" — empilé sur mobile, deux colonnes dès `sm`.
   return (
-    <article className={cn(cardBase, "flex items-stretch gap-4 p-6", className)}>
+    <article
+      className={cn(cardBase, "flex flex-col gap-4 p-5 sm:flex-row sm:items-stretch sm:p-6", className)}
+    >
       <div className="min-w-0 flex-1">
         <h3 className="font-heading text-lg font-semibold text-text">{task.title}</h3>
         {task.description && (
@@ -115,7 +117,7 @@ export function TaskCard({ task, variant = "list", className }: TaskCardProps) {
           <TaskMeta task={task} />
         </div>
       </div>
-      <div className="flex flex-col items-end justify-between gap-4">
+      <div className="flex items-center justify-between gap-4 sm:flex-col sm:items-end sm:justify-between">
         <StatusBadge status={task.status} />
         <ViewButton task={task} />
       </div>

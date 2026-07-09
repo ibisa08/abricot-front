@@ -8,7 +8,7 @@ export const metadata: Metadata = { title: "Inscription — Abricot" };
 
 export default function SigninPage() {
   return (
-    <main>
+    <main id="main-content">
       <AuthShell
         imageSrc="/signin-visual.jpg"
         imageAlt="Poste de travail organisé : ordinateur portable, agrafeuse, stylos orange, réglet et carnet sur un plan clair aux accents bleus et orange."

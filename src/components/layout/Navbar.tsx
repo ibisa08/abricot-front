@@ -49,27 +49,28 @@ export function Navbar() {
           <Logo tone="primary" height={20} />
         </Link>
 
-        {/* Liens centraux */}
-        <ul className="flex items-center gap-2">
+        {/* Liens centraux — libellés masqués sous `sm` (icône seule + aria-label) */}
+        <ul className="flex items-center gap-1 sm:gap-2">
           {NAV_LINKS.map(({ href, label, icon: Icon }) => {
             const active = pathname === href || pathname.startsWith(`${href}/`);
             return (
               <li key={href}>
                 <Link
                   href={href}
+                  aria-label={label}
                   aria-current={active ? "page" : undefined}
                   className={cn(
-                    "inline-flex items-center gap-2 rounded-lg px-3.5 py-2 text-sm font-medium transition-colors",
+                    "inline-flex items-center gap-2 rounded-lg px-2.5 py-2 text-sm font-medium transition-colors sm:px-3.5",
                     active
                       ? "bg-ink text-white" // pastille noire = actif
                       : "text-text hover:bg-black/5",
                   )}
                 >
                   <Icon
-                    className={cn("h-4 w-4", active ? "text-white" : "text-primary")}
+                    className={cn("h-4 w-4 shrink-0", active ? "text-white" : "text-primary")}
                     aria-hidden="true"
                   />
-                  {label}
+                  <span className="hidden sm:inline">{label}</span>
                 </Link>
               </li>
             );

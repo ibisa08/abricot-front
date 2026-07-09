@@ -217,9 +217,11 @@ function PasswordSection() {
   if (!editing) {
     return (
       <div>
+        {/* Affichage purement décoratif (points) : `type="text"` évite l'info
+            navigateur « password field not contained in a form ». */}
         <TextField
           label="Mot de passe"
-          type="password"
+          type="text"
           value="••••••••••••"
           readOnly
           disabled

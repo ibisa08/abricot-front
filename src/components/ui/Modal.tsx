@@ -40,6 +40,8 @@ export function Modal({
         <Dialog.Content
           className={cn(
             "fixed left-1/2 top-1/2 z-50 w-[92vw] max-w-lg -translate-x-1/2 -translate-y-1/2",
+            // Ne dépasse jamais l'écran : défilement interne sur petit écran / contenu long.
+            "max-h-[90dvh] overflow-y-auto",
             "rounded-2xl border border-border bg-surface p-6 shadow-card focus:outline-none",
             className,
           )}

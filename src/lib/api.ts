@@ -31,6 +31,24 @@ const BACKEND_PREFIX = "/api/backend";
 type HttpMethod = "GET" | "POST" | "PUT" | "DELETE";
 
 /**
+ * Session expirée / token invalide : le back renvoie 401 avec
+ * `error === "Authentication failed"` (distinct des 401 "métier" comme
+ * INVALID_CREDENTIALS ou INVALID_CURRENT_PASSWORD, qu'on NE traite PAS ici).
+ * On purge le cookie httpOnly (via le BFF) puis on renvoie vers /login pour
+ * éviter toute boucle middleware (cookie présent mais invalide).
+ */
+let redirectingToLogin = false;
+function handleSessionExpiry(): void {
+  if (typeof window === "undefined" || redirectingToLogin) return;
+  if (window.location.pathname === "/login") return;
+  redirectingToLogin = true;
+  // Purge du cookie best-effort, puis redirection dure.
+  void fetch("/api/auth/logout", { method: "POST", credentials: "same-origin" })
+    .catch(() => {})
+    .finally(() => window.location.replace("/login"));
+}
+
+/**
  * Exécute une requête vers une URL du BFF et déballe l'enveloppe standard.
  * Lève une `ApiError` si `success === false` ou si le status est en échec.
  */
@@ -55,6 +73,14 @@ async function request<T>(url: string, method: HttpMethod, body?: unknown): Prom
   }
 
   if (!res.ok || !payload || payload.success === false) {
+    // Token invalide/expiré sur un appel authentifié → déconnexion + redirection.
+    if (
+      res.status === 401 &&
+      url.startsWith(BACKEND_PREFIX) &&
+      payload?.error === "Authentication failed"
+    ) {
+      handleSessionExpiry();
+    }
     const message = payload?.message ?? "Une erreur est survenue.";
     throw new ApiError(message, res.status, payload?.data?.errors, payload?.error);
   }

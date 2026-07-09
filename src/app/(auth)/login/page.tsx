@@ -8,7 +8,7 @@ export const metadata: Metadata = { title: "Connexion — Abricot" };
 
 export default function LoginPage() {
   return (
-    <main>
+    <main id="main-content">
       <AuthShell
         imageSrc="/login-visual.jpg"
         imageAlt="Bureau lumineux : clavier, carnet à spirale, stylo, réglet et pinces à dessin sur un plan de travail clair aux accents orange."
