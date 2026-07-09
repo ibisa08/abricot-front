@@ -9,7 +9,7 @@ export interface ModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   /** Titre accessible — relié via `aria-labelledby` (géré par Radix). */
-  title: string;
+  title: ReactNode;
   /** Description optionnelle sous le titre. */
   description?: string;
   children?: ReactNode;

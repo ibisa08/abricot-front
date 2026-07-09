@@ -4,7 +4,6 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import * as Tabs from "@radix-ui/react-tabs";
 import { ArrowLeft, Sparkles, SquareCheck, CalendarDays, Users, Search, Inbox } from "lucide-react";
-import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { useProject, useProjectTasks, useCurrentUser } from "@/lib/queries";
 import { Button } from "@/components/ui/Button";
@@ -13,6 +12,7 @@ import { Input } from "@/components/ui/Input";
 import { Label } from "@/components/ui/Label";
 import { ProjectFormModal } from "@/components/projects/ProjectFormModal";
 import { TaskFormModal } from "@/components/tasks/TaskFormModal";
+import { AiGenerateModal } from "@/components/tasks/AiGenerateModal";
 import { TaskRow } from "@/components/tasks/TaskRow";
 import { TaskCalendar } from "@/components/tasks/TaskCalendar";
 import { StatusFilter, type StatusFilterValue } from "@/components/tasks/StatusFilter";
@@ -33,6 +33,7 @@ export function ProjectDetailClient({ id }: { id: string }) {
 
   const [editProjectOpen, setEditProjectOpen] = useState(false);
   const [createTaskOpen, setCreateTaskOpen] = useState(false);
+  const [aiOpen, setAiOpen] = useState(false);
   const [statusFilter, setStatusFilter] = useState<StatusFilterValue>("ALL");
   const [search, setSearch] = useState("");
   const searchId = "task-search";
@@ -116,11 +117,7 @@ export function ProjectDetailClient({ id }: { id: string }) {
           <Button variant="ink" onClick={() => setCreateTaskOpen(true)}>
             Créer une tâche
           </Button>
-          {/* TODO (Prompt 5) : ouvrir <AiTaskModal> (génération de tâches par IA). */}
-          <Button
-            variant="accent"
-            onClick={() => toast.info("La génération de tâches par IA arrive au prochain lot.")}
-          >
+          <Button variant="accent" onClick={() => setAiOpen(true)}>
             <Sparkles className="h-4 w-4" aria-hidden="true" />
             IA
           </Button>
@@ -233,6 +230,7 @@ export function ProjectDetailClient({ id }: { id: string }) {
         open={createTaskOpen}
         onOpenChange={setCreateTaskOpen}
       />
+      <AiGenerateModal projectId={id} open={aiOpen} onOpenChange={setAiOpen} />
     </div>
   );
 }
