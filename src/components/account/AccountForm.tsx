@@ -16,10 +16,11 @@ import {
   type PasswordChangeValues,
   PASSWORD_RULE_HINT,
 } from "@/lib/validation";
-import type { User } from "@/types";
+import type { ProfileUser, User } from "@/types";
 import { Card } from "@/components/ui/Card";
 import { TextField } from "@/components/ui/TextField";
 import { Button } from "@/components/ui/Button";
+import { Alert } from "@/components/ui/Alert";
 
 const PROFILE_FORM_ID = "account-profile-form";
 
@@ -54,7 +55,7 @@ function AccountFormReady({
   user,
   queryClient,
 }: {
-  user: User;
+  user: ProfileUser;
   queryClient: ReturnType<typeof useQueryClient>;
 }) {
   const { firstName, lastName } = splitName(user.name);
@@ -76,7 +77,12 @@ function AccountFormReady({
     mutationFn: (body: { name: string; email: string }) =>
       api.put<{ user: User }>("/auth/profile", body),
     onSuccess: ({ user: updated }) => {
-      queryClient.setQueryData(queryKeys.currentUser, updated);
+      // PUT /auth/profile ne renvoie PAS `hasPassword` : on fusionne avec le
+      // profil en cache. Un remplacement ferait réapparaître le formulaire de
+      // mot de passe sur un compte Google jusqu'au prochain rafraîchissement.
+      queryClient.setQueryData<ProfileUser>(queryKeys.currentUser, (previous) =>
+        previous ? { ...previous, ...updated } : previous,
+      );
       void queryClient.invalidateQueries({ queryKey: queryKeys.currentUser });
       toast.success("Informations mises à jour.");
     },
@@ -138,8 +144,8 @@ function AccountFormReady({
           />
         </form>
 
-        {/* Mot de passe (formulaire indépendant) */}
-        <PasswordSection />
+        {/* Mot de passe (formulaire indépendant) — absent des comptes Google */}
+        <PasswordSection hasPassword={user.hasPassword} />
 
         <Button
           type="submit"
@@ -163,9 +169,10 @@ function AccountFormReady({
 
 /* ------------------------------------------------------------------ */
 /* Section mot de passe : affichage masqué → 2 champs à la demande     */
+/* Comptes Google (hasPassword false) : mention à la place du formulaire */
 /* ------------------------------------------------------------------ */
 
-function PasswordSection() {
+function PasswordSection({ hasPassword }: { hasPassword: boolean }) {
   const [editing, setEditing] = useState(false);
 
   const {
@@ -212,6 +219,23 @@ function PasswordSection() {
   function cancel() {
     reset();
     setEditing(false);
+  }
+
+  // Compte créé via Google : aucun mot de passe local à afficher ni à modifier.
+  // Le retour anticipé est placé après les hooks (règles des hooks React).
+  if (!hasPassword) {
+    return (
+      <section aria-labelledby="account-password-heading">
+        <h2 id="account-password-heading" className="mb-1.5 block text-sm font-medium text-text">
+          Mot de passe
+        </h2>
+        {/* `info` implique role="status" : annonce sans interrompre la lecture. */}
+        <Alert tone="info">
+          Vous vous connectez à Abricot avec votre compte Google. Ce compte n&apos;a pas de mot de
+          passe à modifier.
+        </Alert>
+      </section>
+    );
   }
 
   if (!editing) {

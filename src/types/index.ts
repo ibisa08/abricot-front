@@ -61,6 +61,21 @@ export interface User {
   updatedAt?: string;
 }
 
+/**
+ * Profil renvoyé par `GET /auth/profile` uniquement.
+ *
+ * Attention : `PUT /auth/profile` renvoie un `User` SANS `hasPassword`.
+ * Toute écriture de sa réponse dans le cache doit donc fusionner avec
+ * l'existant, jamais le remplacer.
+ */
+export interface ProfileUser extends User {
+  /**
+   * `false` = compte créé via Google, sans mot de passe local.
+   * Le back n'expose jamais le hash, seulement ce booléen.
+   */
+  hasPassword: boolean;
+}
+
 /* ------------------------------------------------------------------ */
 /* Projet                                                              */
 /* ------------------------------------------------------------------ */

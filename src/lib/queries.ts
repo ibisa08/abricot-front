@@ -2,7 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { api } from "@/lib/api";
-import type { Project, Task, User, UserRef } from "@/types";
+import type { Project, ProfileUser, Task, UserRef } from "@/types";
 
 /** Clés de cache React Query centralisées. */
 export const queryKeys = {
@@ -22,7 +22,7 @@ export function useCurrentUser() {
   return useQuery({
     queryKey: queryKeys.currentUser,
     queryFn: async () => {
-      const { user } = await api.get<{ user: User }>("/auth/profile");
+      const { user } = await api.get<{ user: ProfileUser }>("/auth/profile");
       return user;
     },
     retry: false,
