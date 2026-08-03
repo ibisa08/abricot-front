@@ -1,32 +1,34 @@
 import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
+import { AUTH_COOKIE } from "@/lib/auth";
+import {
+  generateTasks,
+  AiBadOutputError,
+  AiConfigError,
+  AiQuotaError,
+  AiUnavailableError,
+  ContextError,
+} from "@/lib/ai";
 
 /**
- * POST /api/ai/generate-tasks — STUB (Étape 6 de la mission).
+ * POST /api/ai/generate-tasks — Génération de tâches par IA (Étape 6).
  *
- * Séam BFF pour la génération de tâches par IA (RAG + LLM). Pour l'instant :
- * AUCUN appel LLM, AUCUNE fausse tâche renvoyée. La fonctionnalité n'est pas
- * encore branchée : c'est un état MÉTIER ATTENDU, pas une panne serveur. On
- * répond donc par un HTTP 200 portant `success: false` + le code explicite
- * `AI_NOT_IMPLEMENTED`, que le client sait interpréter pour basculer sur l'état
- * « bientôt disponible ». (Un 501 ferait apparaître un « Failed to load
- * resource » rouge, non supprimable, dans la console du navigateur — à éviter
- * pour un cas nominal.) Les vrais échecs (500, timeout, quota) resteront, eux,
- * des statuts d'erreur.
- *
- * ⚠️ SÉCURITÉ — quand la vraie génération sera branchée (Étape 6) :
- *   La clé de l'API LLM (Anthropic/OpenAI/…) DOIT rester côté serveur, lue
- *   depuis `process.env` (ex. `process.env.LLM_API_KEY`), et ne JAMAIS être
- *   exposée au navigateur — exactement comme le JWT backend (voir
- *   `src/lib/auth.ts` + le proxy `src/app/api/backend/[...path]`). Le client
- *   n'appelle que cette route ; il ne voit ni la clé, ni le prompt système, ni
- *   le contexte RAG.
+ * Séam BFF : le client n'appelle QUE cette route. Toute la pipeline RAG (load →
+ * index → retrieve → generate) et la clé Mistral vivent CÔTÉ SERVEUR. La clé est
+ * lue depuis `process.env.MISTRAL_API_KEY`, jamais exposée au navigateur (aucun
+ * NEXT_PUBLIC), exactement comme le JWT backend (cf. src/lib/auth.ts + le proxy
+ * src/app/api/backend/[...path]). Le client ne voit ni la clé, ni le prompt
+ * système, ni le contexte RAG.
  *
  * Body attendu : { projectId: string, prompt: string }
- * Réponse cible (Étape 6) : { success: true, data: { tasks: ProposedTask[] } }
- * où ProposedTask = { title, description, dueDate?, status? }.
+ * Succès       : { success: true, data: { tasks: ProposedTask[] } }
+ * Échec        : { success: false, code, message } + status HTTP approprié.
+ *
+ * Aucune stack trace ne fuit vers le client : chaque erreur typée de la pipeline
+ * est mappée sur un code + un message générique.
  */
 export async function POST(request: Request) {
-  // On valide déjà la forme de la requête (utile tel quel pour l'Étape 6).
+  // On valide déjà la forme de la requête.
   let body: { projectId?: unknown; prompt?: unknown } = {};
   try {
     body = await request.json();
@@ -48,19 +50,86 @@ export async function POST(request: Request) {
     );
   }
 
-  // ────────────────────────────────────────────────────────────────────
-  // TODO (Étape 6) — BRANCHER ICI la vraie génération, et NULLE PART AILLEURS :
-  //   1. Récupérer le contexte du projet (RAG) via le backend Express,
-  //      en attachant le Bearer côté serveur (cf. proxy /api/backend).
-  //   2. Appeler le LLM avec `process.env.LLM_API_KEY` (jamais côté client).
-  //   3. Mapper la réponse en ProposedTask[] et renvoyer :
-  //        return NextResponse.json({ success: true, data: { tasks } });
-  //   Le reste de l'UI (revue, édition, commit des tâches) est déjà prêt.
-  // ────────────────────────────────────────────────────────────────────
-  // 200 volontaire : cas métier attendu (pas une erreur serveur) → console propre.
-  return NextResponse.json({
-    success: false,
-    code: "AI_NOT_IMPLEMENTED",
-    message: "Génération IA à implémenter (Étape 6)",
-  });
+  try {
+    // Cookie httpOnly (JWT) : lu côté serveur, attaché en Bearer par la pipeline
+    // (comme le proxy /api/backend). Jamais transmis au client.
+    const authCookie = (await cookies()).get(AUTH_COOKIE)?.value ?? "";
+
+    const tasks = await generateTasks({ projectId, prompt, authCookie });
+
+    if (tasks.length === 0) {
+      // Parse OK mais aucune tâche exploitable : cas métier attendu (200).
+      return NextResponse.json({
+        success: false,
+        code: "AI_EMPTY_RESULT",
+        message: "Aucune tâche générée, reformule ta demande.",
+      });
+    }
+
+    return NextResponse.json({ success: true, data: { tasks } });
+  } catch (e) {
+    // Clé manquante : log serveur explicite, message générique côté client.
+    if (e instanceof AiConfigError) {
+      console.error("[AI] Configuration manquante:", e.message);
+      return NextResponse.json(
+        {
+          success: false,
+          code: "AI_CONFIG_ERROR",
+          message: "Le service IA n'est pas configuré. Contactez un administrateur.",
+        },
+        { status: 500 },
+      );
+    }
+
+    // Quota / rate-limit Mistral.
+    if (e instanceof AiQuotaError) {
+      return NextResponse.json(
+        {
+          success: false,
+          code: "AI_QUOTA_EXCEEDED",
+          message: "Quota IA atteint, réessaie plus tard.",
+        },
+        { status: 429 },
+      );
+    }
+
+    // Backend injoignable pendant le chargement du contexte.
+    if (e instanceof ContextError) {
+      console.error("[AI] Contexte projet indisponible:", e.message);
+      return NextResponse.json(
+        {
+          success: false,
+          code: "AI_CONTEXT_ERROR",
+          message: "Impossible de charger le contexte du projet. Réessaie plus tard.",
+        },
+        { status: 502 },
+      );
+    }
+
+    // Sortie LLM impossible à parser.
+    if (e instanceof AiBadOutputError) {
+      console.error("[AI] Sortie LLM illisible:", e.message);
+      return NextResponse.json(
+        {
+          success: false,
+          code: "AI_BAD_OUTPUT",
+          message: "La réponse de l'IA était illisible. Reformule ta demande.",
+        },
+        { status: 502 },
+      );
+    }
+
+    // Timeout / API indisponible / 5xx Mistral, et tout imprévu (sans fuite).
+    if (!(e instanceof AiUnavailableError)) {
+      console.error("[AI] Erreur inattendue lors de la génération:", e);
+    }
+    return NextResponse.json(
+      {
+        success: false,
+        code: "AI_UNAVAILABLE",
+        message: "Service IA momentanément indisponible.",
+      },
+      { status: 503 },
+    );
+  }
 }

@@ -25,19 +25,35 @@ const DEV_SAMPLE_TASKS: ProposedTask[] = [
   {
     title: "Configurer l'authentification JWT",
     description: "Émission et vérification des tokens, refresh et middleware d'autorisation.",
+    priority: "HIGH",
     status: "TODO",
   },
   {
     title: "Créer les endpoints produits",
     description: "CRUD des produits avec pagination, tri et filtres.",
+    priority: "MEDIUM",
     status: "IN_PROGRESS",
   },
   {
     title: "Écrire les tests d'intégration",
     description: "Couvrir les parcours critiques : authentification, panier et commande.",
+    priority: "MEDIUM",
     status: "TODO",
   },
 ];
+
+/**
+ * Messages FR par code d'erreur renvoyé par la route IA (Étape 6). Le message
+ * du back prime s'il est présent ; sinon on retombe sur ces libellés clairs.
+ */
+const AI_ERROR_MESSAGES: Record<string, string> = {
+  AI_QUOTA_EXCEEDED: "Quota IA atteint, réessaie plus tard.",
+  AI_UNAVAILABLE: "Service IA momentanément indisponible. Réessaie dans un instant.",
+  AI_CONTEXT_ERROR: "Impossible de charger le contexte du projet. Réessaie plus tard.",
+  AI_BAD_OUTPUT: "La réponse de l'IA était illisible. Reformule ta demande.",
+  AI_CONFIG_ERROR: "Le service IA n'est pas configuré. Contactez un administrateur.",
+  AI_EMPTY_RESULT: "Aucune tâche générée, reformule ta demande.",
+};
 
 const IS_DEV = process.env.NODE_ENV !== "production";
 
@@ -94,14 +110,21 @@ export function AiGenerateModal({ projectId, open, onOpenChange }: AiGenerateMod
         setPhase("review");
         setState("idle");
       } else if (json?.code === "AI_NOT_IMPLEMENTED") {
-        // Cas MÉTIER attendu tant que l'Étape 6 n'est pas branchée : ce n'est
+        // Fallback historique : tant que l'Étape 6 n'est pas branchée, ce n'est
         // pas une erreur → aucun console.error, on bascule sur « unavailable ».
         // La route répond en 200 pour garder la console du navigateur propre.
         setState("unavailable");
       } else {
-        // Vrai échec applicatif (500, quota, réponse malformée…).
+        // Vrai échec applicatif : on mappe le code sur un message FR clair
+        // (quota, service indispo, contexte, sortie illisible, config, vide…),
+        // en gardant le message du back s'il est présent.
         setState("error");
-        setErrorMessage(json?.message ?? "Le service IA est momentanément indisponible.");
+        const code = typeof json?.code === "string" ? json.code : "";
+        setErrorMessage(
+          AI_ERROR_MESSAGES[code] ??
+            json?.message ??
+            "Le service IA est momentanément indisponible.",
+        );
       }
     } catch {
       setState("error");
@@ -118,6 +141,7 @@ export function AiGenerateModal({ projectId, open, onOpenChange }: AiGenerateMod
         const body: Record<string, unknown> = {
           title: t.title,
           description: t.description,
+          priority: t.priority,
           assigneeIds: [],
         };
         if (t.dueDate) {
@@ -204,7 +228,7 @@ export function AiGenerateModal({ projectId, open, onOpenChange }: AiGenerateMod
             type="submit"
             aria-label="Générer les tâches"
             disabled={state === "loading" || prompt.trim() === ""}
-            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary text-white transition-colors hover:bg-primary-hover disabled:opacity-50"
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary-strong text-white transition-colors hover:bg-primary-hover disabled:opacity-50"
           >
             {state === "loading" ? (
               <LoaderCircle className="h-4 w-4 animate-spin" aria-hidden="true" />

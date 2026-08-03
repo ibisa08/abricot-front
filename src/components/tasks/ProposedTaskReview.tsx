@@ -6,18 +6,15 @@ import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
 import { Button } from "@/components/ui/Button";
 import { Label } from "@/components/ui/Label";
-import type { Status } from "@/types";
 
 /**
- * Tâche proposée par l'IA, avant validation. Volontairement découplée du back :
- * c'est le contrat que la génération (Étape 6) devra produire.
+ * Tâche proposée par l'IA, avant validation. Contrat produit par la pipeline RAG
+ * (src/lib/ai) : `title`, `description`, `priority` et `status` sont toujours
+ * renseignés, `dueDate` (ISO) est optionnelle. Ré-exportée ici pour rester le
+ * point d'import historique de l'UI de revue/commit.
  */
-export interface ProposedTask {
-  title: string;
-  description: string;
-  dueDate?: string | null;
-  status?: Status;
-}
+import type { ProposedTask } from "@/lib/ai/types";
+export type { ProposedTask };
 
 export interface ProposedTaskReviewProps {
   tasks: ProposedTask[];
@@ -119,7 +116,7 @@ export function ProposedTaskReview({
                       <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
                       Supprimer
                     </button>
-                    <span aria-hidden="true" className="text-border">
+                    <span aria-hidden="true" className="text-text-muted">
                       |
                     </span>
                     <button
