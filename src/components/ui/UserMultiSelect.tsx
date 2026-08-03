@@ -130,7 +130,7 @@ export function UserMultiSelect({
         {value.map((user) => (
           <span
             key={keyOf(user)}
-            className="inline-flex items-center gap-1.5 rounded-full bg-primary-soft py-0.5 pl-1 pr-1.5 text-xs font-medium text-primary"
+            className="inline-flex items-center gap-1.5 rounded-full bg-primary-soft py-0.5 pl-1 pr-1.5 text-xs font-medium text-primary-text"
           >
             <Avatar name={user.name ?? user.email} size="sm" className="h-5 w-5 text-[9px]" />
             <span className="max-w-[12ch] truncate">{user.name ?? user.email}</span>

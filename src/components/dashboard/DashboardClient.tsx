@@ -2,7 +2,7 @@
 
 import { useEffect, useState, type ReactNode } from "react";
 import * as Tabs from "@radix-ui/react-tabs";
-import { Plus, SquareCheck, Calendar, Inbox, RotateCw } from "lucide-react";
+import { Plus, LayoutList, SquareKanban, Inbox, RotateCw } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { useAssignedTasks, useCurrentUser } from "@/lib/queries";
@@ -15,7 +15,7 @@ import { TaskBoard } from "./TaskBoard";
 const TAB_TRIGGER_CLASS = cn(
   "inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors",
   "text-text hover:bg-black/5",
-  "data-[state=active]:bg-primary-soft data-[state=active]:text-primary data-[state=active]:hover:bg-primary-soft",
+  "data-[state=active]:bg-primary-soft data-[state=active]:text-primary-text data-[state=active]:hover:bg-primary-soft",
   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
 );
 
@@ -103,11 +103,11 @@ export function DashboardClient({ initialView = "liste" }: DashboardClientProps)
           className="flex items-center gap-3"
         >
           <Tabs.Trigger value="liste" className={TAB_TRIGGER_CLASS}>
-            <SquareCheck className="h-4 w-4 text-primary" aria-hidden="true" />
+            <LayoutList className="h-4 w-4 text-primary" aria-hidden="true" />
             Liste
           </Tabs.Trigger>
           <Tabs.Trigger value="kanban" className={TAB_TRIGGER_CLASS}>
-            <Calendar className="h-4 w-4 text-primary" aria-hidden="true" />
+            <SquareKanban className="h-4 w-4 text-primary" aria-hidden="true" />
             Kanban
           </Tabs.Trigger>
         </Tabs.List>

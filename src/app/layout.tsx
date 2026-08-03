@@ -1,21 +1,21 @@
 import type { Metadata } from "next";
-import { Poppins, Inter } from "next/font/google";
+import { Manrope, Inter } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
 
-/** Titres : Poppins (600/700) — aspect rond et moderne des headings. */
-const poppins = Poppins({
-  variable: "--font-poppins",
+/** Titres : Manrope — SemiBold (600, H4/H5) + Bold (700, H1). */
+const manrope = Manrope({
+  variable: "--font-manrope",
   subsets: ["latin"],
   weight: ["600", "700"],
   display: "swap",
 });
 
-/** Corps : Inter (400/500) — labels, textes, méta. */
+/** Corps : Inter (400 Regular) — labels, textes, méta (Body/*). */
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
-  weight: ["400", "500"],
+  weight: ["400"],
   display: "swap",
 });
 
@@ -30,7 +30,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="fr" className={`${poppins.variable} ${inter.variable} h-full`}>
+    <html lang="fr" className={`${manrope.variable} ${inter.variable} h-full`}>
       <body className="flex min-h-full flex-col">
         {/* Lien d'évitement (WCAG 2.4.1) : premier élément focusable de la page. */}
         <a

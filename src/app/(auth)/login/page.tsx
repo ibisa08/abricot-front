@@ -10,7 +10,7 @@ export default function LoginPage() {
   return (
     <main id="main-content">
       <AuthShell
-        imageSrc="/login-visual.jpg"
+        imageSrc="/login-visual.webp"
         imageAlt="Bureau lumineux : clavier, carnet à spirale, stylo, réglet et pinces à dessin sur un plan de travail clair aux accents orange."
       >
         <Link href="/dashboard" aria-label="Abricot — accueil" className="inline-flex rounded-md">
@@ -23,7 +23,7 @@ export default function LoginPage() {
           Pas encore de compte&nbsp;?{" "}
           <Link
             href="/signin"
-            className="rounded font-medium text-primary hover:text-primary-hover hover:underline"
+            className="rounded font-medium text-primary-text hover:text-primary-hover hover:underline"
           >
             Créer un compte
           </Link>

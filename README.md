@@ -1,36 +1,79 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Abricot
 
-## Getting Started
+**Abricot** est un SaaS de gestion de tâches et de projets collaboratifs.
+Projet réalisé dans le cadre du parcours **OpenClassrooms — Projet 11**.
 
-First, run the development server:
+L'application permet de créer des projets, d'y organiser des tâches, d'assigner
+plusieurs membres, de commenter, et de **générer des tâches assistée par IA**
+(Mistral + LlamaIndex.TS) à partir du contexte d'un projet.
+
+## Stack
+
+**Front (ce dépôt)**
+- [Next.js 15](https://nextjs.org) (App Router) + React 19
+- TypeScript
+- Tailwind CSS
+- Radix UI (Dialog, Popover, Select, Tabs, Dropdown…)
+- TanStack Query (data fetching / cache)
+- React Hook Form + Zod (formulaires & validation)
+
+**IA (côté serveur, via le BFF Next)**
+- Mistral (`@llamaindex/mistral`) orchestré avec [LlamaIndex.TS](https://ts.llamaindex.ai) (`llamaindex`)
+
+**Backend (dépôt séparé)**
+- Express / Prisma / SQLite — exposé sur `http://localhost:8000`
+
+## Prérequis
+
+- Node.js 20+
+- npm
+- Le backend Express lancé en parallèle (voir son propre dépôt) sur le port `8000`
+
+## Installation
+
+```bash
+npm install
+```
+
+## Variables d'environnement
+
+Copier `.env.example` vers `.env.local` et renseigner les valeurs :
+
+```bash
+cp .env.example .env.local
+```
+
+| Variable          | Description                                                        |
+| ----------------- | ------------------------------------------------------------------ |
+| `BACKEND_URL`     | URL du backend Express (appels serveur→serveur via le BFF).         |
+| `MISTRAL_API_KEY` | Clé API Mistral, lue **uniquement côté serveur** pour la génération de tâches IA. Jamais exposée au navigateur. |
+
+> ⚠️ Ne jamais commiter de vraie clé. `MISTRAL_API_KEY` reste dans `.env.local`
+> (ignoré par git). Sans cette clé, la génération IA se désactive proprement
+> (les autres fonctionnalités restent disponibles).
+
+## Lancer le projet
+
+Front (ce dépôt) :
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# → http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Backend (dépôt séparé) : le démarrer en parallèle sur le port `8000`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Compte de test
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Utiliser le compte de démonstration fourni avec le backend, ou créer un compte
+depuis la page d'inscription (`/signin`).
 
-## Learn More
+## Scripts utiles
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+| Script                | Rôle                                  |
+| --------------------- | ------------------------------------- |
+| `npm run dev`         | Serveur de dev (port 3000)            |
+| `npm run build`       | Build de production                   |
+| `npm run start`       | Sert le build de production           |
+| `npm run lint`        | ESLint                                |
+| `npm run format`      | Prettier (écriture)                   |

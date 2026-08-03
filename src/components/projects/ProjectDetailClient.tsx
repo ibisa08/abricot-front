@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import * as Tabs from "@radix-ui/react-tabs";
-import { ArrowLeft, Sparkles, SquareCheck, CalendarDays, Users, Search, Inbox } from "lucide-react";
+import { ArrowLeft, Sparkles, LayoutList, Calendar, Users, Search, Inbox } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useProject, useProjectTasks, useCurrentUser } from "@/lib/queries";
 import { Button } from "@/components/ui/Button";
@@ -22,7 +22,7 @@ import type { Task, User } from "@/types";
 const TAB_TRIGGER_CLASS = cn(
   "inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors",
   "text-text hover:bg-black/5",
-  "data-[state=active]:bg-primary-soft data-[state=active]:text-primary data-[state=active]:hover:bg-primary-soft",
+  "data-[state=active]:bg-primary-soft data-[state=active]:text-primary-text data-[state=active]:hover:bg-primary-soft",
   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
 );
 
@@ -101,7 +101,7 @@ export function ProjectDetailClient({ id }: { id: string }) {
                 <button
                   type="button"
                   onClick={() => setEditProjectOpen(true)}
-                  className="rounded text-sm font-medium text-primary hover:text-primary-hover hover:underline"
+                  className="rounded text-sm font-medium text-primary-text hover:text-primary-hover hover:underline"
                 >
                   Modifier
                 </button>
@@ -127,7 +127,7 @@ export function ProjectDetailClient({ id }: { id: string }) {
       {/* Bandeau contributeurs */}
       <section
         aria-label="Contributeurs"
-        className="mt-6 flex flex-col gap-3 rounded-2xl bg-surface/70 px-5 py-4 sm:flex-row sm:items-center sm:justify-between"
+        className="mt-6 flex flex-col gap-6 rounded-lg bg-surface-alt px-6 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-[50px]"
       >
         <p className="flex items-center gap-2 text-sm">
           <Users className="h-4 w-4 text-text-muted" aria-hidden="true" />
@@ -141,7 +141,7 @@ export function ProjectDetailClient({ id }: { id: string }) {
               size="sm"
               className="h-5 w-5 text-[9px]"
             />
-            <span className="rounded-full bg-primary-soft px-2 py-0.5 text-xs font-medium text-primary">
+            <span className="rounded-full bg-primary-soft px-2 py-0.5 text-xs font-medium text-primary-text">
               Propriétaire
             </span>
           </span>
@@ -171,11 +171,11 @@ export function ProjectDetailClient({ id }: { id: string }) {
             <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
               <Tabs.List aria-label="Vue des tâches" className="flex items-center gap-2">
                 <Tabs.Trigger value="liste" className={TAB_TRIGGER_CLASS}>
-                  <SquareCheck className="h-4 w-4 text-primary" aria-hidden="true" />
+                  <LayoutList className="h-4 w-4 text-primary" aria-hidden="true" />
                   Liste
                 </Tabs.Trigger>
                 <Tabs.Trigger value="calendrier" className={TAB_TRIGGER_CLASS}>
-                  <CalendarDays className="h-4 w-4 text-primary" aria-hidden="true" />
+                  <Calendar className="h-4 w-4 text-primary" aria-hidden="true" />
                   Calendrier
                 </Tabs.Trigger>
               </Tabs.List>

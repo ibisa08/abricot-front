@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
-import { LayoutGrid, FolderKanban, User as UserIcon, LogOut, ChevronDown } from "lucide-react";
+import { LayoutGrid, Folder, User as UserIcon, LogOut, ChevronDown } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -15,7 +15,7 @@ import { Avatar } from "@/components/ui/Avatar";
 /** Liens principaux de navigation (centre de la navbar). */
 const NAV_LINKS = [
   { href: "/dashboard", label: "Tableau de bord", icon: LayoutGrid },
-  { href: "/projets", label: "Projets", icon: FolderKanban },
+  { href: "/projets", label: "Projets", icon: Folder },
 ] as const;
 
 export function Navbar() {
@@ -60,7 +60,7 @@ export function Navbar() {
                   aria-label={label}
                   aria-current={active ? "page" : undefined}
                   className={cn(
-                    "inline-flex items-center gap-2 rounded-lg px-2.5 py-2 text-sm font-medium transition-colors sm:px-3.5",
+                    "inline-flex items-center gap-2 rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
                     active
                       ? "bg-ink text-white" // pastille noire = actif
                       : "text-text hover:bg-black/5",

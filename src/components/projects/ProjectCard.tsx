@@ -61,12 +61,12 @@ export function ProjectCard({ project }: ProjectCardProps) {
   });
 
   return (
-    <article className="group relative flex flex-col rounded-2xl border border-border bg-surface p-6 shadow-card transition-shadow hover:shadow-md focus-within:ring-2 focus-within:ring-primary">
+    <article className="group relative flex flex-col rounded-lg border border-border bg-surface px-6 py-10 shadow-card transition-shadow hover:shadow-md focus-within:ring-2 focus-within:ring-primary">
       {/* Lien étendu : couvre toute la carte, en dessous du contenu. */}
       <Link
         href={`/projets/${project.id}`}
         aria-label={`Ouvrir le projet ${project.name}`}
-        className="absolute inset-0 z-0 rounded-2xl"
+        className="absolute inset-0 z-0 rounded-lg"
       />
 
       {/* Menu d'actions (au-dessus du lien) */}
@@ -121,7 +121,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
           <div className="mt-2 flex flex-wrap items-center gap-2">
             <Avatar name={project.owner.name ?? project.owner.email} size="sm" />
             {isOwner && (
-              <span className="inline-flex items-center rounded-full bg-primary-soft px-2.5 py-0.5 text-xs font-medium text-primary">
+              <span className="inline-flex items-center rounded-full bg-primary-soft px-2.5 py-0.5 text-xs font-medium text-primary-text">
                 Propriétaire
               </span>
             )}

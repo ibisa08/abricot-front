@@ -23,7 +23,7 @@ export function Logo({ tone = "primary", height = 24, className }: LogoProps) {
       aria-hidden="true"
       className={cn(
         "inline-block shrink-0",
-        tone === "primary" ? "bg-primary-bright" : "bg-ink",
+        tone === "primary" ? "bg-primary" : "bg-ink",
         className,
       )}
       style={{

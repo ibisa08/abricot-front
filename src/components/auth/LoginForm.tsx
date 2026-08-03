@@ -55,7 +55,7 @@ export function LoginForm() {
 
   return (
     <div className="w-full max-w-sm">
-      <h1 className="font-heading text-4xl font-bold text-primary-bright">Connexion</h1>
+      <h1 className="font-heading text-[40px] font-bold leading-none text-primary">Connexion</h1>
 
       <form onSubmit={handleSubmit(onSubmit)} noValidate className="mt-8 space-y-5">
         {formError && (
@@ -101,7 +101,7 @@ export function LoginForm() {
           <button
             type="button"
             onClick={() => toast.info("Réinitialisation du mot de passe : bientôt disponible.")}
-            className="rounded text-sm font-medium text-primary hover:text-primary-hover hover:underline"
+            className="rounded text-sm font-medium text-primary-text hover:text-primary-hover hover:underline"
           >
             Mot de passe oublié&nbsp;?
           </button>

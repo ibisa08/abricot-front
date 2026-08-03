@@ -10,7 +10,7 @@ export default function SigninPage() {
   return (
     <main id="main-content">
       <AuthShell
-        imageSrc="/signin-visual.jpg"
+        imageSrc="/signin-visual.webp"
         imageAlt="Poste de travail organisé : ordinateur portable, agrafeuse, stylos orange, réglet et carnet sur un plan clair aux accents bleus et orange."
       >
         <Link href="/dashboard" aria-label="Abricot — accueil" className="inline-flex rounded-md">
@@ -23,7 +23,7 @@ export default function SigninPage() {
           Déjà inscrit&nbsp;?{" "}
           <Link
             href="/login"
-            className="rounded font-medium text-primary hover:text-primary-hover hover:underline"
+            className="rounded font-medium text-primary-text hover:text-primary-hover hover:underline"
           >
             Se connecter
           </Link>

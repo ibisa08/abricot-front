@@ -31,7 +31,7 @@ export function Avatar({ name, size = "md", filled = false, className }: AvatarP
       title={label}
       className={cn(
         "inline-flex shrink-0 items-center justify-center rounded-full font-medium",
-        filled ? "bg-primary text-white" : "bg-primary-soft text-primary",
+        filled ? "bg-primary-strong text-white" : "bg-primary-soft text-primary-text",
         SIZE_CLASSES[size],
         className,
       )}

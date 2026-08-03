@@ -43,7 +43,7 @@ function TaskMeta({ task }: { task: Task }) {
       {items.map(({ key, icon: Icon, label, srLabel }, index) => (
         <li key={key} className="flex items-center gap-2">
           {index > 0 && (
-            <span aria-hidden="true" className="text-border">
+            <span aria-hidden="true" className="text-text-muted">
               |
             </span>
           )}

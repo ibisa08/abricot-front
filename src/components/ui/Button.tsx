@@ -13,8 +13,8 @@ export type ButtonSize = "sm" | "md";
 
 const VARIANT_CLASSES: Record<ButtonVariant, string> = {
   ink: "bg-ink text-white hover:bg-ink-hover",
-  accent: "bg-primary text-white hover:bg-primary-hover",
-  soft: "bg-primary-soft text-primary hover:bg-primary-soft/80",
+  accent: "bg-primary-strong text-white hover:bg-primary-hover",
+  soft: "bg-primary-soft text-primary-text hover:bg-primary-soft/80",
   ghost: "bg-transparent text-text hover:bg-black/5",
 };
 

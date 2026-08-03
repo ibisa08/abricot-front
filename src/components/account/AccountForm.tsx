@@ -231,7 +231,7 @@ function PasswordSection() {
         <button
           type="button"
           onClick={() => setEditing(true)}
-          className="mt-2 rounded text-sm font-medium text-primary hover:text-primary-hover hover:underline"
+          className="mt-2 rounded text-sm font-medium text-primary-text hover:text-primary-hover hover:underline"
         >
           Changer le mot de passe
         </button>

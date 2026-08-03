@@ -16,20 +16,27 @@ const config: Config = {
       colors: {
         // Palette de marque
         primary: {
-          DEFAULT: "var(--color-primary)", // #C2410C orange accessible (texte/boutons)
+          DEFAULT: "var(--color-primary)", // #D3590B marque : logo, gros titres, graphiques (3:1)
+          text: "var(--color-primary-text)", // #C2410C orange en PETIT texte (AA 4.5:1)
+          strong: "var(--color-primary-strong)", // #C2410C FOND sous contenu blanc (AA 5.17:1)
           hover: "var(--color-primary-hover)", // #9A3412
-          bright: "var(--color-primary-bright)", // #EA580C orange vif (logo, gros titres)
           soft: "var(--color-primary-soft)", // #FFF1E9
         },
         ink: {
-          DEFAULT: "var(--color-ink)", // #1A1A1A boutons pleins + texte fort
+          DEFAULT: "var(--color-ink)", // #1F1F1F boutons pleins + texte fort
           hover: "var(--color-ink-hover)", // #000000
         },
-        bg: "var(--color-bg)", // #F5F5F7 fond de page
-        surface: "var(--color-surface)", // #FFFFFF cartes / navbar / modales
-        border: "var(--color-border)", // #ECECEC
+        bg: {
+          DEFAULT: "var(--color-bg)", // #F5F5F7 fond de page
+          auth: "var(--color-bg-auth)", // #F9FAFB fond pages auth
+        },
+        surface: {
+          DEFAULT: "var(--color-surface)", // #FFFFFF cartes / navbar / modales
+          alt: "var(--color-surface-alt)", // #F3F4F6 barre Contributeurs
+        },
+        border: "var(--color-border)", // #E5E7EB
         text: {
-          DEFAULT: "var(--color-text)", // #1A1A1A
+          DEFAULT: "var(--color-text)", // #1F1F1F
           muted: "var(--color-text-muted)", // #6B7280
         },
         // Badges de statut
@@ -45,8 +52,8 @@ const config: Config = {
         },
       },
       fontFamily: {
-        // Titres : Poppins ; corps : Inter — chargés via next/font (variables CSS)
-        heading: ["var(--font-poppins)", "system-ui", "sans-serif"],
+        // Titres : Manrope ; corps : Inter — chargés via next/font (variables CSS)
+        heading: ["var(--font-manrope)", "system-ui", "sans-serif"],
         sans: ["var(--font-inter)", "system-ui", "sans-serif"],
       },
       borderRadius: {
