@@ -163,6 +163,93 @@ Cloud Console. Si ces variables manquent, le backend le signale au démarrage et
 le bouton Google renvoie vers `/login?error=oauth_unavailable` ; la connexion par
 email et mot de passe reste fonctionnelle.
 
+## Tests end-to-end (Playwright)
+
+Quatre scénarios couvrent les parcours critiques : connexion (échec puis succès),
+protection des routes privées, création d'un projet, création d'une tâche.
+
+### Pourquoi une base de test séparée
+
+Les tests **écrivent** en base : ils créent des projets et des tâches. Les faire
+tourner sur la base de développement la polluerait à chaque exécution et rendrait
+les résultats dépendants de son état. Le backend expose donc une instance dédiée
+sur le port `8001`, avec son propre fichier SQLite (`db.test.sqlite`),
+réinitialisable à volonté.
+
+L'adresse de ce backend n'est écrite **qu'à un seul endroit** du dépôt :
+`e2e/config.ts`. `playwright.config.ts` l'injecte dans le serveur Next via
+`webServer.env`, sous le nom `BACKEND_URL`. Une variable présente dans
+l'environnement du processus prime sur `.env.local`, ce qui garantit que les
+tests ne visent jamais le backend de développement — sans dupliquer la valeur
+dans un fichier `.env` supplémentaire.
+
+Pour la même raison, `reuseExistingServer` vaut `false` : réutiliser un serveur
+Next déjà lancé ferait tourner les tests contre la base de développement, en
+silence. **Le port 3000 doit donc être libre.**
+
+### Prérequis
+
+Deux serveurs, dans deux terminaux :
+
+| Terminal | Dépôt | Rôle |
+| -------- | ----- | ---- |
+| 1 | `abricot-backend` | Backend de test, port `8001` |
+| 2 | `abricot-front` | Lancé automatiquement par Playwright, port `3000` |
+
+Le front n'a pas à être démarré à la main : Playwright s'en charge, avec la bonne
+configuration. S'il tourne déjà sur le port 3000, l'arrêter avant.
+
+### Séquence de lancement
+
+```bash
+# 1. Backend — une seule fois, pour créer le fichier de configuration de test
+cd ~/abricot-backend
+cp .env.test.example .env.test
+
+# 2. Backend — réinitialiser la base de test et la peupler
+npm run db:test:reset
+
+# 3. Backend — démarrer le serveur de test (laisser tourner)
+npm run dev:test          # → http://localhost:8001
+
+# 4. Front — dans un autre terminal, port 3000 libre
+cd ~/abricot-front
+npm run test:e2e
+```
+
+Si le backend de test n'est pas joignable, la suite s'arrête immédiatement avec
+un message rappelant ces étapes, plutôt que d'échouer test par test.
+
+La réinitialisation (étape 2) n'est pas nécessaire avant chaque exécution : les
+tests créent des données portant un nom unique et ne dépendent pas de l'état
+laissé par une exécution précédente. La relancer de temps en temps évite
+simplement que la base de test n'enfle.
+
+### Scripts
+
+| Script                | Rôle                                                     |
+| --------------------- | -------------------------------------------------------- |
+| `npm run test:e2e`    | Exécute la suite (Chromium, un worker)                    |
+| `npm run test:e2e:ui` | Mode interactif : exécution pas à pas, inspection du DOM  |
+
+En cas d'échec, la trace et la capture d'écran sont conservées dans
+`test-results/`, et le rapport HTML dans `playwright-report/`
+(`npx playwright show-report`). Rien n'est conservé quand tout passe.
+
+### Conventions
+
+- Sélecteurs accessibles uniquement (`getByRole`, `getByLabel`, `getByText`) :
+  un test qui casse parce qu'une classe CSS a changé n'apprend rien, et un
+  élément inatteignable par ces méthodes signale généralement un défaut
+  d'accessibilité à corriger dans l'application.
+- Aucune attente fixe : les attentes automatiques de Playwright suffisent.
+- Aucune assertion sur les commentaires : le seed en tire le nombre et l'auteur
+  au hasard (`Math.random`), toute vérification serait instable.
+- La connexion passe par le helper `e2e/helpers/auth.ts`, réutilisé par tous les
+  tests qui exigent une session.
+- Chaque test est indépendant de l'ordre d'exécution : contexte navigateur neuf,
+  connexion explicite, et noms de données uniques.
+
 ## Scripts utiles
 
 | Script                | Rôle                                  |
@@ -172,3 +259,5 @@ email et mot de passe reste fonctionnelle.
 | `npm run start`       | Sert le build de production           |
 | `npm run lint`        | ESLint                                |
 | `npm run format`      | Prettier (écriture)                   |
+| `npm run test:e2e`    | Tests end-to-end Playwright           |
+| `npm run test:e2e:ui` | Tests end-to-end en mode interactif   |

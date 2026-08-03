@@ -41,3 +41,11 @@ yarn-error.log*
 next-env.d.ts
 !.env.example
 .claude/
+
+# Playwright (artefacts de test : traces, captures, rapports)
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+/playwright/.auth/
+.playwright
