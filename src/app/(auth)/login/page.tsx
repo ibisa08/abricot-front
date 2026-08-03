@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import Link from "next/link";
 import { AuthShell } from "@/components/auth/AuthShell";
 import { LoginForm } from "@/components/auth/LoginForm";
+import { GoogleAuthSection } from "@/components/auth/GoogleAuthSection";
+import { OAuthErrorAlert } from "@/components/auth/OAuthErrorAlert";
 import { Logo } from "@/components/layout/Logo";
 
 export const metadata: Metadata = { title: "Connexion — Abricot" };
@@ -17,7 +20,16 @@ export default function LoginPage() {
           <Logo tone="primary" height={30} />
         </Link>
 
-        <LoginForm />
+        {/* Bloc central d'AuthShell : erreur OAuth, formulaire, puis Google. */}
+        <div className="w-full">
+          <Suspense fallback={null}>
+            <OAuthErrorAlert />
+          </Suspense>
+
+          <LoginForm />
+
+          <GoogleAuthSection ariaLabel="Se connecter avec Google" />
+        </div>
 
         <p className="w-full max-w-sm text-sm text-text-muted">
           Pas encore de compte&nbsp;?{" "}

@@ -133,6 +133,15 @@ export async function logout(): Promise<void> {
   await request<Record<string, never>>("/api/auth/logout", "POST");
 }
 
+/**
+ * Échange le code à usage unique reçu de Google contre une session.
+ * Le BFF pose le cookie httpOnly ; le JWT n'est jamais exposé ici.
+ */
+export async function exchangeOAuthCode(code: string): Promise<User> {
+  const { user } = await request<{ user: User }>("/api/auth/oauth/exchange", "POST", { code });
+  return user;
+}
+
 /* ------------------------------------------------------------------ */
 /* Mise en forme des erreurs pour l'UI                                 */
 /* ------------------------------------------------------------------ */

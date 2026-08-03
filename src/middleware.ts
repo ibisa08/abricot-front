@@ -14,8 +14,12 @@ import { AUTH_COOKIE } from "@/lib/auth";
  * déclenche un logout + redirect côté client.
  */
 
-/** Routes publiques (pas de garde). */
-const PUBLIC_PATHS = ["/login", "/signin"];
+/**
+ * Routes publiques (pas de garde).
+ * `/auth/callback` en fait partie : l'utilisateur en revient de Google sans
+ * cookie encore posé — le garder privé rendrait le flux OAuth impossible.
+ */
+const PUBLIC_PATHS = ["/login", "/signin", "/auth/callback"];
 
 export function middleware(request: NextRequest): NextResponse {
   const { pathname } = request.nextUrl;

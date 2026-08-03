@@ -23,6 +23,25 @@ const SIZE_CLASSES: Record<ButtonSize, string> = {
   md: "h-11 px-5 text-sm",
 };
 
+/**
+ * Recette de classes du bouton, extraite pour être partagée avec les éléments
+ * qui doivent en adopter l'apparence sans en être un (`<a>` de navigation).
+ */
+export function buttonClasses(options?: {
+  variant?: ButtonVariant;
+  size?: ButtonSize;
+  className?: string;
+}): string {
+  const { variant = "ink", size = "md", className } = options ?? {};
+  return cn(
+    "inline-flex items-center justify-center gap-2 rounded-lg font-medium transition-colors",
+    "disabled:pointer-events-none disabled:opacity-50",
+    VARIANT_CLASSES[variant],
+    SIZE_CLASSES[size],
+    className,
+  );
+}
+
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant;
   size?: ButtonSize;
@@ -36,13 +55,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
     <button
       ref={ref}
       type={type}
-      className={cn(
-        "inline-flex items-center justify-center gap-2 rounded-lg font-medium transition-colors",
-        "disabled:pointer-events-none disabled:opacity-50",
-        VARIANT_CLASSES[variant],
-        SIZE_CLASSES[size],
-        className,
-      )}
+      className={buttonClasses({ variant, size, className })}
       {...props}
     />
   );
