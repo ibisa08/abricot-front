@@ -15,6 +15,7 @@ plusieurs membres, de commenter, et de **générer des tâches assistée par IA*
 - Radix UI (Dialog, Popover, Select, Tabs, Dropdown…)
 - TanStack Query (data fetching / cache)
 - React Hook Form + Zod (formulaires & validation)
+- dnd-kit (`core`, `sortable`, `utilities`) — glisser-déposer du Kanban
 
 **IA (côté serveur, via le BFF Next)**
 - Mistral (`@llamaindex/mistral`) orchestré avec [LlamaIndex.TS](https://ts.llamaindex.ai) (`llamaindex`)
@@ -265,6 +266,7 @@ En cas d'échec, la trace et la capture d'écran sont conservées dans
 | `npm run start`       | Sert le build de production           |
 | `npm run lint`        | ESLint                                |
 | `npm run format`      | Prettier (écriture)                   |
+| `npm run format:check`| Prettier (vérification seule)         |
 | `npm run test:e2e`    | Tests end-to-end Playwright           |
 | `npm run test:e2e:ui` | Tests end-to-end en mode interactif   |
 
