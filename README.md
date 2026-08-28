@@ -164,8 +164,9 @@ email et mot de passe reste fonctionnelle.
 
 ## Tests end-to-end (Playwright)
 
-Quatre scénarios couvrent les parcours critiques : connexion (échec puis succès),
-protection des routes privées, création d'un projet, création d'une tâche.
+Sept scénarios couvrent les parcours critiques : connexion (échec puis succès),
+protection des routes privées, création d'un projet, création d'une tâche, et
+deux déplacements Kanban — au clavier, puis à la souris vers une colonne vide.
 
 ### Pourquoi une base de test séparée
 
@@ -223,6 +224,12 @@ La réinitialisation (étape 2) n'est pas nécessaire avant chaque exécution : 
 tests créent des données portant un nom unique et ne dépendent pas de l'état
 laissé par une exécution précédente. La relancer de temps en temps évite
 simplement que la base de test n'enfle.
+
+> **Arrêter le serveur de test avant toute réinitialisation.** `db:test:reset`
+> supprime le fichier SQLite avant de le recréer. Un serveur `dev:test` encore
+> actif en conserve un descripteur ouvert : il continue de répondre, mais toute
+> écriture échoue en **500 sans message explicite**, et les tests deviennent
+> illisibles. L'ordre est donc : couper `dev:test`, réinitialiser, relancer.
 
 ### Scripts
 
@@ -351,6 +358,50 @@ tâche qu'à quelqu'un qui appartient déjà au projet.
 
 L'ensemble suit le motif ARIA *combobox* sur une base Radix Popover, pour rester
 utilisable au clavier et avec un lecteur d'écran.
+
+### Vue Kanban et glisser-déposer
+
+Fichiers : `src/components/dashboard/TaskBoard.tsx`,
+`src/components/dashboard/BoardTaskCard.tsx`,
+`src/components/dashboard/boardColumns.ts`, `src/lib/queries.ts`
+(`useUpdateTaskStatus`).
+
+Le tableau de bord propose une vue Kanban à trois colonnes — À faire, En cours,
+Terminées — où le statut d'une tâche se change en déplaçant sa carte. Le statut
+est la seule donnée modifiée : le type `Task` n'a pas de champ de position, un
+ordre choisi à la souris serait perdu au premier rafraîchissement. La stratégie
+de tri passée à `SortableContext` est donc neutre, pour ne pas laisser croire à
+un classement que rien ne persiste.
+
+**Souris et clavier.** Le déplacement repose sur `@dnd-kit`, avec deux capteurs :
+`PointerSensor`, dont le seuil de 5 px distingue un clic d'un glissement, et
+`KeyboardSensor`. Le geste part d'une poignée dédiée et non de la carte entière,
+qui contient déjà un lien « Voir » : la rendre déplaçable imbriquerait deux
+éléments interactifs. Au clavier, Espace saisit la carte, les flèches gauche et
+droite choisissent la colonne, Espace dépose, Échap annule.
+
+**Détection de la colonne visée.** La détection de collision est restreinte aux
+zones de dépôt de colonne. `closestCorners` classe les cibles par distance entre
+coins homologues ; comme la grille étire les colonnes à la hauteur de la plus
+haute, leur géométrie n'a plus rien de comparable à celle d'une carte. Une
+colonne vide n'était alors jamais retenue, et un dépôt dessus enregistrait le
+statut de la colonne voisine. Ne comparer que les trois colonnes rétablit une
+géométrie homogène.
+
+**Annonces lecteur d'écran.** `DndContext` reçoit des annonces en français pour
+le début du geste, le survol d'une colonne, le dépôt et l'annulation, ainsi que
+les instructions lues à la prise de focus sur une poignée. Une région
+`aria-live` distincte, maintenue montée en permanence, confirme l'issue de
+l'enregistrement : les annonces de `@dnd-kit` décrivent le geste, pas son
+résultat.
+
+**Mise à jour optimiste.** `useUpdateTaskStatus` écrit le nouveau statut dans le
+cache TanStack Query avant la réponse du serveur, pour que la carte reste là où
+elle a été lâchée. Les requêtes en vol sur `assignedTasks` sont annulées avant
+la prise de l'instantané : un rafraîchissement déclenché ailleurs pourrait sinon
+se résoudre juste après et écraser l'état optimiste. En cas d'échec,
+l'instantané est restauré, un toast d'erreur s'affiche et la région `aria-live`
+signale que la tâche est restée dans sa colonne d'origine.
 
 ### Authentification Google (OAuth 2.0)
 

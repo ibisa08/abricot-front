@@ -41,8 +41,8 @@
 
 ### Typographie
 
-- **Titres** : `Poppins` (600/700) — aspect rond et moderne des headings ("Connexion", "Tableau de bord").
-- **Corps** : `Inter` (400/500) — labels, textes, méta.
+- **Titres** : `Manrope` (600/700) — aspect rond et moderne des headings ("Connexion", "Tableau de bord").
+- **Corps** : `Inter` (400) — labels, textes, méta.
 - Charger via `next/font/google`. Titres orange sur les pages auth (`Connexion`/`Inscription`).
 
 ### Rayons & ombres
