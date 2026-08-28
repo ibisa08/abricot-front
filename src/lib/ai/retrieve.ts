@@ -13,10 +13,7 @@ const SIMILARITY_TOP_K = 5;
  * (1) rester cohérent avec le projet et (2) éviter de reproposer des tâches qui
  * existent déjà.
  */
-export async function retrieveContext(
-  index: VectorStoreIndex,
-  prompt: string,
-): Promise<string> {
+export async function retrieveContext(index: VectorStoreIndex, prompt: string): Promise<string> {
   const retriever = index.asRetriever({ similarityTopK: SIMILARITY_TOP_K });
   const nodes = await retriever.retrieve(prompt);
 

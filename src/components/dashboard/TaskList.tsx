@@ -23,9 +23,7 @@ export function TaskList({ tasks }: TaskListProps) {
     const q = query.trim().toLowerCase();
     if (!q) return tasks;
     return tasks.filter(
-      (t) =>
-        t.title.toLowerCase().includes(q) ||
-        (t.description ?? "").toLowerCase().includes(q),
+      (t) => t.title.toLowerCase().includes(q) || (t.description ?? "").toLowerCase().includes(q),
     );
   }, [tasks, query]);
 

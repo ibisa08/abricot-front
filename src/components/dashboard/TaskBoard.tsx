@@ -209,9 +209,7 @@ export function TaskBoard({ tasks }: TaskBoardProps) {
         { taskId: task.id, projectId: task.projectId, status: column },
         {
           onSuccess: () =>
-            setStatusMessage(
-              `Tâche « ${task.title} » déplacée vers ${COLUMN_TITLES[column]}.`,
-            ),
+            setStatusMessage(`Tâche « ${task.title} » déplacée vers ${COLUMN_TITLES[column]}.`),
           onError: () =>
             setStatusMessage(
               `Échec du déplacement de la tâche « ${task.title} ». ` +
@@ -268,9 +266,7 @@ export function TaskBoard({ tasks }: TaskBoardProps) {
           ))}
         </div>
 
-        <DragOverlay>
-          {activeTask ? <BoardTaskCardPreview task={activeTask} /> : null}
-        </DragOverlay>
+        <DragOverlay>{activeTask ? <BoardTaskCardPreview task={activeTask} /> : null}</DragOverlay>
       </DndContext>
     </div>
   );
@@ -304,7 +300,7 @@ function BoardColumn({
       aria-label={`${title} (${tasks.length})`}
       className={cn(
         "rounded-2xl border p-4 transition-colors",
-        isDropTarget ? "border-primary bg-primary-soft" : "border-border bg-surface/60",
+        isDropTarget ? "border-primary bg-primary-soft" : "bg-surface/60 border-border",
       )}
     >
       <header className="mb-4 flex items-center gap-2 px-1">

@@ -95,7 +95,6 @@ export function DashboardClient({ initialView = "liste" }: DashboardClientProps)
 
       <ProjectFormModal mode="create" open={createOpen} onOpenChange={setCreateOpen} />
 
-
       {/* Bascule de vues + contenus */}
       <Tabs.Root defaultValue={initialView} className="mt-8">
         <Tabs.List

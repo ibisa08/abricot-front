@@ -39,7 +39,7 @@ export function ConfirmDialog({
           variant="ink"
           onClick={onConfirm}
           disabled={loading}
-          className={destructive ? "bg-status-todo-fg hover:bg-status-todo-fg/90" : undefined}
+          className={destructive ? "hover:bg-status-todo-fg/90 bg-status-todo-fg" : undefined}
         >
           {loading && <LoaderCircle className="h-4 w-4 animate-spin" aria-hidden="true" />}
           {confirmLabel}

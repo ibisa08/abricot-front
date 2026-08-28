@@ -100,9 +100,12 @@ export function AiGenerateModal({ projectId, open, onOpenChange }: AiGenerateMod
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ projectId, prompt }),
       });
-      const json = (await res.json().catch(() => null)) as
-        | { success?: boolean; code?: string; message?: string; data?: { tasks?: ProposedTask[] } }
-        | null;
+      const json = (await res.json().catch(() => null)) as {
+        success?: boolean;
+        code?: string;
+        message?: string;
+        data?: { tasks?: ProposedTask[] };
+      } | null;
 
       if (res.ok && json?.success && Array.isArray(json.data?.tasks)) {
         // Chemin nominal (Étape 6) : on passe à la revue.
@@ -197,10 +200,14 @@ export function AiGenerateModal({ projectId, open, onOpenChange }: AiGenerateMod
             <InputPhaseBody
               state={state}
               errorMessage={errorMessage}
-              onLoadSample={IS_DEV ? () => {
-                setProposed(DEV_SAMPLE_TASKS);
-                setPhase("review");
-              } : undefined}
+              onLoadSample={
+                IS_DEV
+                  ? () => {
+                      setProposed(DEV_SAMPLE_TASKS);
+                      setPhase("review");
+                    }
+                  : undefined
+              }
             />
           )}
         </div>
@@ -275,8 +282,8 @@ function InputPhaseBody({
         </div>
         <p className="mt-3 font-medium text-text">Fonctionnalité IA bientôt disponible</p>
         <p className="mt-1 max-w-sm text-sm text-text-muted">
-          La génération automatique de tâches sera activée prochainement (Étape 6). Vous pouvez
-          déjà créer vos tâches manuellement.
+          La génération automatique de tâches sera activée prochainement (Étape 6). Vous pouvez déjà
+          créer vos tâches manuellement.
         </p>
         {onLoadSample && (
           <button
@@ -306,7 +313,7 @@ function InputPhaseBody({
   // idle
   return (
     <Centered>
-      <Sparkles className="h-8 w-8 text-primary/40" aria-hidden="true" />
+      <Sparkles className="text-primary/40 h-8 w-8" aria-hidden="true" />
       <p className="mt-3 max-w-sm text-sm text-text-muted">
         Décrivez les tâches à créer dans le champ ci-dessous : l’IA vous proposera une liste que
         vous pourrez revoir avant de l’ajouter.

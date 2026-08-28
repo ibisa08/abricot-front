@@ -17,8 +17,6 @@ test.describe("Projets", () => {
     await dialog.getByLabel("Description*").fill("Projet créé par un test end-to-end.");
     await dialog.getByRole("button", { name: "Ajouter un projet" }).click();
 
-    await expect(
-      page.getByRole("link", { name: `Ouvrir le projet ${projectName}` }),
-    ).toBeVisible();
+    await expect(page.getByRole("link", { name: `Ouvrir le projet ${projectName}` })).toBeVisible();
   });
 });

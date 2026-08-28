@@ -61,7 +61,7 @@ export function LoginForm() {
         {formError && (
           <p
             role="alert"
-            className="rounded-lg border border-status-todo-fg/30 bg-status-todo-bg/50 px-3.5 py-2.5 text-sm font-medium text-status-todo-fg"
+            className="border-status-todo-fg/30 bg-status-todo-bg/50 rounded-lg border px-3.5 py-2.5 text-sm font-medium text-status-todo-fg"
           >
             {formError}
           </p>

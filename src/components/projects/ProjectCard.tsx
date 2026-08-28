@@ -37,9 +37,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
 
   // Équipe = propriétaire + membres (le back n'inclut pas l'owner dans members ;
   // on filtre par sécurité pour éviter tout doublon).
-  const otherMembers = project.members
-    .map((m) => m.user)
-    .filter((u) => u.id !== project.ownerId);
+  const otherMembers = project.members.map((m) => m.user).filter((u) => u.id !== project.ownerId);
   const team: UserRef[] = [project.owner, ...otherMembers];
 
   const isOwner = currentUser?.id === project.ownerId;
@@ -61,7 +59,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
   });
 
   return (
-    <article className="group relative flex flex-col rounded-lg border border-border bg-surface px-6 py-10 shadow-card transition-shadow hover:shadow-md focus-within:ring-2 focus-within:ring-primary">
+    <article className="group relative flex flex-col rounded-lg border border-border bg-surface px-6 py-10 shadow-card transition-shadow focus-within:ring-2 focus-within:ring-primary hover:shadow-md">
       {/* Lien étendu : couvre toute la carte, en dessous du contenu. */}
       <Link
         href={`/projets/${project.id}`}
@@ -105,7 +103,10 @@ export function ProjectCard({ project }: ProjectCardProps) {
             aria-valuemax={100}
             aria-label={`Progression : ${percent}%`}
           >
-            <div className="h-full rounded-full bg-primary transition-all" style={{ width: `${percent}%` }} />
+            <div
+              className="h-full rounded-full bg-primary transition-all"
+              style={{ width: `${percent}%` }}
+            />
           </div>
           <p className="mt-2 text-xs text-text-muted">
             {done}/{total} tâche{total > 1 ? "s" : ""} terminée{done > 1 ? "s" : ""}
@@ -134,7 +135,12 @@ export function ProjectCard({ project }: ProjectCardProps) {
 
       {/* Modales (rendues au niveau de la carte) */}
       {isAdmin && (
-        <ProjectFormModal mode="edit" open={editOpen} onOpenChange={setEditOpen} project={project} />
+        <ProjectFormModal
+          mode="edit"
+          open={editOpen}
+          onOpenChange={setEditOpen}
+          project={project}
+        />
       )}
       {isOwner && (
         <ConfirmDialog
@@ -195,7 +201,7 @@ function ProjectActionsMenu({
           {canDelete && (
             <DropdownMenu.Item
               onSelect={onDelete}
-              className="flex cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-sm text-status-todo-fg outline-none data-[highlighted]:bg-status-todo-bg/50"
+              className="data-[highlighted]:bg-status-todo-bg/50 flex cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-sm text-status-todo-fg outline-none"
             >
               <Trash2 className="h-4 w-4" aria-hidden="true" />
               Supprimer

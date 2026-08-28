@@ -51,7 +51,9 @@ export function TaskComments({
       await invalidate();
     },
     onError: (err) =>
-      toast.error(err instanceof ApiError ? toUserMessage(err) : "L'ajout du commentaire a échoué."),
+      toast.error(
+        err instanceof ApiError ? toUserMessage(err) : "L'ajout du commentaire a échoué.",
+      ),
   });
 
   const editMutation = useMutation({

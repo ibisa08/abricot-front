@@ -108,7 +108,11 @@ export function TaskCard({ task, variant = "list", className }: TaskCardProps) {
   // variant === "list" — empilé sur mobile, deux colonnes dès `sm`.
   return (
     <article
-      className={cn(cardBase, "flex flex-col gap-4 p-5 sm:flex-row sm:items-stretch sm:p-6", className)}
+      className={cn(
+        cardBase,
+        "flex flex-col gap-4 p-5 sm:flex-row sm:items-stretch sm:p-6",
+        className,
+      )}
     >
       <div className="min-w-0 flex-1">
         <h3 className="font-heading text-lg font-semibold text-text">{task.title}</h3>

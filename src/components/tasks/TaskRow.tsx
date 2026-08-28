@@ -62,9 +62,7 @@ export function TaskRow({ task, projectId, teamOptions, currentUser }: TaskRowPr
               <h3 className="font-heading text-base font-semibold text-text">{task.title}</h3>
               <StatusBadge status={task.status} />
             </div>
-            {task.description && (
-              <p className="mt-1 text-sm text-text-muted">{task.description}</p>
-            )}
+            {task.description && <p className="mt-1 text-sm text-text-muted">{task.description}</p>}
 
             <p className="mt-3 flex items-center gap-1.5 text-xs text-text-muted">
               Échéance :
@@ -80,7 +78,11 @@ export function TaskRow({ task, projectId, teamOptions, currentUser }: TaskRowPr
                     key={a.id}
                     className="inline-flex items-center gap-1.5 rounded-full bg-bg py-0.5 pl-0.5 pr-2"
                   >
-                    <Avatar name={a.user.name ?? a.user.email} size="sm" className="h-5 w-5 text-[9px]" />
+                    <Avatar
+                      name={a.user.name ?? a.user.email}
+                      size="sm"
+                      className="h-5 w-5 text-[9px]"
+                    />
                     <span className="text-text">{a.user.name ?? a.user.email}</span>
                   </span>
                 ))
@@ -113,7 +115,7 @@ export function TaskRow({ task, projectId, teamOptions, currentUser }: TaskRowPr
                 </DropdownMenu.Item>
                 <DropdownMenu.Item
                   onSelect={() => setDeleteOpen(true)}
-                  className="flex cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-sm text-status-todo-fg outline-none data-[highlighted]:bg-status-todo-bg/50"
+                  className="data-[highlighted]:bg-status-todo-bg/50 flex cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-sm text-status-todo-fg outline-none"
                 >
                   <Trash2 className="h-4 w-4" aria-hidden="true" />
                   Supprimer

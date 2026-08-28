@@ -138,7 +138,7 @@ export function UserMultiSelect({
               type="button"
               onClick={() => remove(user)}
               aria-label={`Retirer ${user.name ?? user.email}`}
-              className="rounded-full p-0.5 text-primary/70 transition-colors hover:bg-primary/10 hover:text-primary"
+              className="text-primary/70 hover:bg-primary/10 rounded-full p-0.5 transition-colors hover:text-primary"
             >
               <X className="h-3 w-3" aria-hidden="true" />
             </button>
@@ -187,7 +187,12 @@ export function UserMultiSelect({
             className="h-9 w-full rounded-lg border border-border bg-surface px-3 text-sm text-text outline-none placeholder:text-text-muted focus-visible:border-primary"
           />
 
-          <ul id={listId} role="listbox" aria-label="Résultats" className="mt-2 max-h-56 overflow-y-auto">
+          <ul
+            id={listId}
+            role="listbox"
+            aria-label="Résultats"
+            className="mt-2 max-h-56 overflow-y-auto"
+          >
             {isFetching && (
               <li className="flex items-center gap-2 px-2 py-2 text-sm text-text-muted">
                 <LoaderCircle className="h-4 w-4 animate-spin" aria-hidden="true" />
@@ -234,7 +239,9 @@ export function UserMultiSelect({
                         </span>
                         <span className="block truncate text-xs text-text-muted">{user.email}</span>
                       </span>
-                      {selected && <Check className="h-4 w-4 shrink-0 text-primary" aria-hidden="true" />}
+                      {selected && (
+                        <Check className="h-4 w-4 shrink-0 text-primary" aria-hidden="true" />
+                      )}
                     </button>
                   </li>
                 );

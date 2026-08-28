@@ -30,12 +30,15 @@ export interface TaskFormModalProps {
 }
 
 /** Chips de statut proposés à la création/édition (l'API n'expose pas CANCELLED ici). */
-const STATUS_CHIPS: { value: Extract<Status, "TODO" | "IN_PROGRESS" | "DONE">; label: string; classes: string }[] =
-  [
-    { value: "TODO", label: "À faire", classes: "bg-status-todo-bg text-status-todo-fg" },
-    { value: "IN_PROGRESS", label: "En cours", classes: "bg-status-doing-bg text-status-doing-fg" },
-    { value: "DONE", label: "Terminée", classes: "bg-status-done-bg text-status-done-fg" },
-  ];
+const STATUS_CHIPS: {
+  value: Extract<Status, "TODO" | "IN_PROGRESS" | "DONE">;
+  label: string;
+  classes: string;
+}[] = [
+  { value: "TODO", label: "À faire", classes: "bg-status-todo-bg text-status-todo-fg" },
+  { value: "IN_PROGRESS", label: "En cours", classes: "bg-status-doing-bg text-status-doing-fg" },
+  { value: "DONE", label: "Terminée", classes: "bg-status-done-bg text-status-done-fg" },
+];
 
 /** ISO "yyyy-mm-dd" → "yyyy-mm-dd" pour `<input type="date">` (sans dérive de fuseau). */
 function toDateInput(iso: string | null): string {
@@ -98,15 +101,12 @@ export function TaskFormModal({
     try {
       if (mode === "create") {
         // POST n'accepte PAS status → créer, puis PUT si statut ≠ TODO.
-        const { task: created } = await api.post<{ task: Task }>(
-          `/projects/${projectId}/tasks`,
-          {
-            title: values.title,
-            description: values.description,
-            dueDate: dueDateISO,
-            assigneeIds,
-          },
-        );
+        const { task: created } = await api.post<{ task: Task }>(`/projects/${projectId}/tasks`, {
+          title: values.title,
+          description: values.description,
+          dueDate: dueDateISO,
+          assigneeIds,
+        });
         if (status && status !== "TODO") {
           await api.put(`/projects/${projectId}/tasks/${created.id}`, { status });
         }
@@ -142,7 +142,11 @@ export function TaskFormModal({
   const canSubmit = isValid && !submitting;
 
   return (
-    <Modal open={open} onOpenChange={onOpenChange} title={isCreate ? "Créer une tâche" : "Modifier"}>
+    <Modal
+      open={open}
+      onOpenChange={onOpenChange}
+      title={isCreate ? "Créer une tâche" : "Modifier"}
+    >
       <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-5">
         <div>
           <Label htmlFor={titleId}>Titre*</Label>
@@ -154,7 +158,11 @@ export function TaskFormModal({
             {...register("title")}
           />
           {errors.title && (
-            <p id={`${titleId}-error`} role="alert" className="mt-1.5 text-xs font-medium text-status-todo-fg">
+            <p
+              id={`${titleId}-error`}
+              role="alert"
+              className="mt-1.5 text-xs font-medium text-status-todo-fg"
+            >
               {errors.title.message}
             </p>
           )}
@@ -170,7 +178,11 @@ export function TaskFormModal({
             {...register("description")}
           />
           {errors.description && (
-            <p id={`${descId}-error`} role="alert" className="mt-1.5 text-xs font-medium text-status-todo-fg">
+            <p
+              id={`${descId}-error`}
+              role="alert"
+              className="mt-1.5 text-xs font-medium text-status-todo-fg"
+            >
               {errors.description.message}
             </p>
           )}
@@ -186,7 +198,11 @@ export function TaskFormModal({
             {...register("dueDate")}
           />
           {errors.dueDate && (
-            <p id={`${dueId}-error`} role="alert" className="mt-1.5 text-xs font-medium text-status-todo-fg">
+            <p
+              id={`${dueId}-error`}
+              role="alert"
+              className="mt-1.5 text-xs font-medium text-status-todo-fg"
+            >
               {errors.dueDate.message}
             </p>
           )}
@@ -218,9 +234,7 @@ export function TaskFormModal({
                   className={cn(
                     "rounded-full px-3 py-1 text-xs font-medium transition",
                     chip.classes,
-                    active
-                      ? "ring-2 ring-primary ring-offset-1"
-                      : "opacity-60 hover:opacity-100",
+                    active ? "ring-2 ring-primary ring-offset-1" : "opacity-60 hover:opacity-100",
                   )}
                 >
                   {chip.label}

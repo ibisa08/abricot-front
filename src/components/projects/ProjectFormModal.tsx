@@ -105,9 +105,7 @@ export function ProjectFormModal({ mode, open, onOpenChange, project }: ProjectF
 
     const failed = results.filter((r) => r.status === "rejected").length;
     if (failed > 0) {
-      toast.warning(
-        `Projet enregistré, mais ${failed} modification(s) de l'équipe ont échoué.`,
-      );
+      toast.warning(`Projet enregistré, mais ${failed} modification(s) de l'équipe ont échoué.`);
     } else {
       toast.success("Projet mis à jour.");
     }
@@ -144,7 +142,11 @@ export function ProjectFormModal({ mode, open, onOpenChange, project }: ProjectF
             {...register("name")}
           />
           {errors.name && (
-            <p id={`${nameId}-error`} role="alert" className="mt-1.5 text-xs font-medium text-status-todo-fg">
+            <p
+              id={`${nameId}-error`}
+              role="alert"
+              className="mt-1.5 text-xs font-medium text-status-todo-fg"
+            >
               {errors.name.message}
             </p>
           )}
@@ -160,7 +162,11 @@ export function ProjectFormModal({ mode, open, onOpenChange, project }: ProjectF
             {...register("description")}
           />
           {errors.description && (
-            <p id={`${descId}-error`} role="alert" className="mt-1.5 text-xs font-medium text-status-todo-fg">
+            <p
+              id={`${descId}-error`}
+              role="alert"
+              className="mt-1.5 text-xs font-medium text-status-todo-fg"
+            >
               {errors.description.message}
             </p>
           )}

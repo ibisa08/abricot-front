@@ -9,6 +9,7 @@ plusieurs membres, de commenter, et de **générer des tâches assistée par IA*
 ## Stack
 
 **Front (ce dépôt)**
+
 - [Next.js 15](https://nextjs.org) (App Router) + React 19
 - TypeScript
 - Tailwind CSS
@@ -18,9 +19,11 @@ plusieurs membres, de commenter, et de **générer des tâches assistée par IA*
 - dnd-kit (`core`, `sortable`, `utilities`) — glisser-déposer du Kanban
 
 **IA (côté serveur, via le BFF Next)**
+
 - Mistral (`@llamaindex/mistral`) orchestré avec [LlamaIndex.TS](https://ts.llamaindex.ai) (`llamaindex`)
 
 **Backend (dépôt séparé)**
+
 - Express / Prisma / SQLite — exposé sur `http://localhost:8000`
 
 ## Prérequis
@@ -43,11 +46,11 @@ Copier `.env.example` vers `.env.local` et renseigner les valeurs :
 cp .env.example .env.local
 ```
 
-| Variable          | Description                                                        |
-| ----------------- | ------------------------------------------------------------------ |
-| `BACKEND_URL`     | URL du backend Express (appels serveur→serveur via le BFF).         |
+| Variable                  | Description                                                                                                                                                                                                                |
+| ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `BACKEND_URL`             | URL du backend Express (appels serveur→serveur via le BFF).                                                                                                                                                                |
 | `NEXT_PUBLIC_BACKEND_URL` | URL du backend telle que le **navigateur** doit la voir. Sert à construire le lien « Continuer avec Google », qui est une navigation pleine page vers le backend. Inlinée dans le bundle client : n'y mettre aucun secret. |
-| `MISTRAL_API_KEY` | Clé API Mistral, lue **uniquement côté serveur** pour la génération de tâches IA. Jamais exposée au navigateur. |
+| `MISTRAL_API_KEY`         | Clé API Mistral, lue **uniquement côté serveur** pour la génération de tâches IA. Jamais exposée au navigateur.                                                                                                            |
 
 Les deux premières valent la même chose en développement (`http://localhost:8000`),
 mais elles sont distinctes par nature : `BACKEND_URL` est résolue côté serveur
@@ -131,15 +134,15 @@ qu'à l'étape 7, par un appel serveur→serveur.
 
 ### Fichiers concernés
 
-| Fichier | Rôle |
-| ------- | ---- |
-| `src/lib/oauth.ts` | URL de départ du flux (depuis `NEXT_PUBLIC_BACKEND_URL`) et libellés des erreurs |
-| `src/components/auth/GoogleAuthSection.tsx` | Séparateur « ou » et lien Google (`<a>`, jamais un `fetch`) |
-| `src/app/auth/callback/page.tsx` | Page de retour : écran de chargement pendant l'échange |
-| `src/components/auth/OAuthCallbackClient.tsx` | Déclenche l'échange dès le montage, une seule fois |
-| `src/app/api/auth/oauth/exchange/route.ts` | Échange serveur→serveur et pose du cookie |
-| `src/components/auth/OAuthErrorAlert.tsx` | Affiche le message correspondant à `?error=` sur `/login` |
-| `src/middleware.ts` | `/auth/callback` est une route publique : l'utilisateur en revient sans cookie |
+| Fichier                                       | Rôle                                                                             |
+| --------------------------------------------- | -------------------------------------------------------------------------------- |
+| `src/lib/oauth.ts`                            | URL de départ du flux (depuis `NEXT_PUBLIC_BACKEND_URL`) et libellés des erreurs |
+| `src/components/auth/GoogleAuthSection.tsx`   | Séparateur « ou » et lien Google (`<a>`, jamais un `fetch`)                      |
+| `src/app/auth/callback/page.tsx`              | Page de retour : écran de chargement pendant l'échange                           |
+| `src/components/auth/OAuthCallbackClient.tsx` | Déclenche l'échange dès le montage, une seule fois                               |
+| `src/app/api/auth/oauth/exchange/route.ts`    | Échange serveur→serveur et pose du cookie                                        |
+| `src/components/auth/OAuthErrorAlert.tsx`     | Affiche le message correspondant à `?error=` sur `/login`                        |
+| `src/middleware.ts`                           | `/auth/callback` est une route publique : l'utilisateur en revient sans cookie   |
 
 ### Erreurs
 
@@ -192,10 +195,10 @@ silence. **Le port 3000 doit donc être libre.**
 
 Deux serveurs, dans deux terminaux :
 
-| Terminal | Dépôt | Rôle |
-| -------- | ----- | ---- |
-| 1 | `abricot-backend` | Backend de test, port `8001` |
-| 2 | `abricot-front` | Lancé automatiquement par Playwright, port `3000` |
+| Terminal | Dépôt             | Rôle                                              |
+| -------- | ----------------- | ------------------------------------------------- |
+| 1        | `abricot-backend` | Backend de test, port `8001`                      |
+| 2        | `abricot-front`   | Lancé automatiquement par Playwright, port `3000` |
 
 Le front n'a pas à être démarré à la main : Playwright s'en charge, avec la bonne
 configuration. S'il tourne déjà sur le port 3000, l'arrêter avant.
@@ -236,8 +239,8 @@ simplement que la base de test n'enfle.
 
 | Script                | Rôle                                                     |
 | --------------------- | -------------------------------------------------------- |
-| `npm run test:e2e`    | Exécute la suite (Chromium, un worker)                    |
-| `npm run test:e2e:ui` | Mode interactif : exécution pas à pas, inspection du DOM  |
+| `npm run test:e2e`    | Exécute la suite (Chromium, un worker)                   |
+| `npm run test:e2e:ui` | Mode interactif : exécution pas à pas, inspection du DOM |
 
 En cas d'échec, la trace et la capture d'écran sont conservées dans
 `test-results/`, et le rapport HTML dans `playwright-report/`
@@ -259,16 +262,16 @@ En cas d'échec, la trace et la capture d'écran sont conservées dans
 
 ## Scripts utiles
 
-| Script                | Rôle                                  |
-| --------------------- | ------------------------------------- |
-| `npm run dev`         | Serveur de dev (port 3000)            |
-| `npm run build`       | Build de production                   |
-| `npm run start`       | Sert le build de production           |
-| `npm run lint`        | ESLint                                |
-| `npm run format`      | Prettier (écriture)                   |
-| `npm run format:check`| Prettier (vérification seule)         |
-| `npm run test:e2e`    | Tests end-to-end Playwright           |
-| `npm run test:e2e:ui` | Tests end-to-end en mode interactif   |
+| Script                 | Rôle                                |
+| ---------------------- | ----------------------------------- |
+| `npm run dev`          | Serveur de dev (port 3000)          |
+| `npm run build`        | Build de production                 |
+| `npm run start`        | Sert le build de production         |
+| `npm run lint`         | ESLint                              |
+| `npm run format`       | Prettier (écriture)                 |
+| `npm run format:check` | Prettier (vérification seule)       |
+| `npm run test:e2e`     | Tests end-to-end Playwright         |
+| `npm run test:e2e:ui`  | Tests end-to-end en mode interactif |
 
 ## Fonctionnalités bonus
 
@@ -279,7 +282,7 @@ choix technique **et la raison** qui l'a motivé.
 
 Fichiers : `src/lib/queries.ts`, `src/app/providers.tsx`.
 
-Les données du backend sont de l'état *serveur* : elles sont partagées, elles
+Les données du backend sont de l'état _serveur_ : elles sont partagées, elles
 peuvent devenir obsolètes, et plusieurs composants les demandent en même temps.
 Les gérer avec `useState` + `useEffect` obligerait à réécrire, dans chaque
 composant, la déduplication des requêtes, le cache, l'invalidation après
@@ -358,7 +361,7 @@ second cas, une prop `options` fournit la liste fermée des membres du projet et
 le filtrage se fait localement, sans appel réseau — on ne peut assigner une
 tâche qu'à quelqu'un qui appartient déjà au projet.
 
-L'ensemble suit le motif ARIA *combobox* sur une base Radix Popover, pour rester
+L'ensemble suit le motif ARIA _combobox_ sur une base Radix Popover, pour rester
 utilisable au clavier et avec un lecteur d'écran.
 
 ### Vue Kanban et glisser-déposer

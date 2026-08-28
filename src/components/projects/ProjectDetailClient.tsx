@@ -107,9 +107,7 @@ export function ProjectDetailClient({ id }: { id: string }) {
                 </button>
               )}
             </div>
-            {project.description && (
-              <p className="mt-1 text-text-muted">{project.description}</p>
-            )}
+            {project.description && <p className="mt-1 text-text-muted">{project.description}</p>}
           </div>
         </div>
 
@@ -340,8 +338,8 @@ function DetailSkeleton() {
           <div className="mt-2 h-4 w-96 max-w-full animate-pulse rounded bg-border" />
         </div>
       </div>
-      <div className="mt-6 h-16 animate-pulse rounded-2xl bg-border/60" />
-      <div className="mt-6 h-64 animate-pulse rounded-2xl bg-border/60" />
+      <div className="bg-border/60 mt-6 h-16 animate-pulse rounded-2xl" />
+      <div className="bg-border/60 mt-6 h-64 animate-pulse rounded-2xl" />
     </div>
   );
 }

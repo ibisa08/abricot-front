@@ -10,9 +10,10 @@
  * URL publique du backend Express, exposée au navigateur.
  * Doit être lue en littéral pour que Next l'inline au build.
  */
-const PUBLIC_BACKEND_URL = (
-  process.env.NEXT_PUBLIC_BACKEND_URL ?? "http://localhost:8000"
-).replace(/\/+$/, "");
+const PUBLIC_BACKEND_URL = (process.env.NEXT_PUBLIC_BACKEND_URL ?? "http://localhost:8000").replace(
+  /\/+$/,
+  "",
+);
 
 /**
  * Point d'entrée du flux Google, côté backend.
@@ -26,14 +27,12 @@ export const GOOGLE_AUTH_URL = `${PUBLIC_BACKEND_URL}/auth/google`;
  * Formulation destinée à l'utilisateur : aucun terme technique.
  */
 const OAUTH_ERROR_MESSAGES: Record<string, string> = {
-  oauth_state:
-    "Votre connexion avec Google a expiré ou a été interrompue. Merci de réessayer.",
+  oauth_state: "Votre connexion avec Google a expiré ou a été interrompue. Merci de réessayer.",
   oauth_email_unverified:
     "Votre adresse Google n'est pas confirmée. Confirmez-la auprès de Google, puis réessayez.",
   oauth_denied:
     "Vous n'avez pas autorisé Abricot à accéder à votre compte Google. Aucune information n'a été partagée.",
-  oauth_missing_code:
-    "La réponse de Google était incomplète. Merci de réessayer.",
+  oauth_missing_code: "La réponse de Google était incomplète. Merci de réessayer.",
   oauth_unavailable:
     "La connexion avec Google n'est pas disponible pour le moment. Vous pouvez vous connecter avec votre email et votre mot de passe.",
   oauth_init_failed:
@@ -48,8 +47,5 @@ const OAUTH_ERROR_MESSAGES: Record<string, string> = {
  */
 export function getOAuthErrorMessage(code: string | null): string | null {
   if (!code) return null;
-  return (
-    OAUTH_ERROR_MESSAGES[code] ??
-    "La connexion n'a pas abouti. Merci de réessayer."
-  );
+  return OAUTH_ERROR_MESSAGES[code] ?? "La connexion n'a pas abouti. Merci de réessayer.";
 }
