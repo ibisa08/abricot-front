@@ -30,13 +30,38 @@ plusieurs membres, de commenter, et de **générer des tâches assistée par IA*
 
 - Node.js 20+
 - npm
-- Le backend Express lancé en parallèle (voir son propre dépôt) sur le port `8000`
+- **Le backend Express, dans un dépôt séparé :
+  https://github.com/ibisa08/abricot-backend** — à lancer en parallèle sur le
+  port `8000`.
+
+Le front ne fonctionne pas seul : comptes, projets, tâches et commentaires
+viennent tous du backend. Pour le mettre en route une première fois :
+
+```bash
+git clone https://github.com/ibisa08/abricot-backend.git
+cd abricot-backend
+cp .env.example .env      # puis changer la valeur de JWT_SECRET
+npm install
+npx prisma generate
+npx prisma migrate deploy
+npm run seed              # crée le compte de démo alice@example.com
+npm run dev               # → http://localhost:8000
+```
+
+Le README du backend détaille ces étapes, ainsi que la configuration de la
+connexion Google.
 
 ## Installation
 
 ```bash
 npm install
+npx playwright install chromium
 ```
+
+`npm install` pose `@playwright/test`, mais **pas le navigateur qu'il pilote** :
+sans la seconde commande, `npm run test:e2e` échoue sur un exécutable Chromium
+introuvable. Elle n'est à lancer qu'une fois par machine, et peut être omise si
+l'on ne joue pas les tests end-to-end.
 
 ## Variables d'environnement
 
@@ -58,8 +83,17 @@ Next, `NEXT_PUBLIC_BACKEND_URL` côté navigateur. En production, elles peuvent
 différer (réseau interne contre URL publique).
 
 > ⚠️ Ne jamais commiter de vraie clé. `MISTRAL_API_KEY` reste dans `.env.local`
-> (ignoré par git). Sans cette clé, la génération IA se désactive proprement
-> (les autres fonctionnalités restent disponibles).
+> (ignoré par git). Une clé s'obtient sur
+> [console.mistral.ai](https://console.mistral.ai).
+
+**Sans `MISTRAL_API_KEY`, la génération IA n'est pas désactivée pour autant.**
+La clé est lue côté serveur uniquement : le navigateur ne peut pas savoir
+qu'elle manque, et le bouton « IA » de la page d'un projet est donc rendu sans
+condition. L'absence n'est détectée qu'au moment de la génération — la route
+`/api/ai/generate-tasks` répond alors un `500` de code `AI_CONFIG_ERROR`, et la
+modale affiche « Le service IA n'est pas configuré. Contactez un
+administrateur. ». Le reste de l'application n'est pas affecté : projets,
+tâches, commentaires et Kanban restent pleinement fonctionnels.
 
 ## Lancer le projet
 
@@ -76,6 +110,31 @@ Backend (dépôt séparé) : le démarrer en parallèle sur le port `8000`.
 
 Utiliser le compte de démonstration fourni avec le backend, ou créer un compte
 depuis la page d'inscription (`/signin`).
+
+## Fonctionnalités
+
+- **Tableau de bord** (`/dashboard`) — deux onglets : une **vue Liste** de vos
+  tâches assignées, dotée d'une recherche côté client sur le titre et la
+  description, et une **vue Kanban** à trois colonnes où le statut se change au
+  glisser-déposer (détaillée plus bas).
+- **Projets** (`/projets`) — création, modification et suppression, avec gestion
+  des contributeurs par autocomplétion sur l'email.
+- **Détail d'un projet** (`/projets/[id]`) — également deux onglets :
+  - **Liste** : les tâches du projet, créables et modifiables, assignables à
+    plusieurs membres à la fois ;
+  - **Calendrier** : les mêmes tâches regroupées par **jour d'échéance**, du plus
+    proche au plus lointain, celles sans date étant rassemblées en fin de vue
+    sous « Sans échéance ».
+
+  Une recherche et un **filtre par statut** (Tous, À faire, En cours, Terminée,
+  Annulée) s'appliquent aux **deux onglets simultanément** : changer d'onglet ne
+  réinitialise pas le tri en cours.
+- **Commentaires de tâches** — chaque tâche porte son fil de discussion. Tout
+  membre du projet peut commenter ; l'édition et la suppression sont réservées à
+  l'auteur du commentaire.
+- **Génération de tâches par IA** — voir la section dédiée dans
+  [Fonctionnalités bonus](#fonctionnalités-bonus).
+- **Mon compte** (`/compte`) — profil et changement de mot de passe.
 
 ## Authentification
 
@@ -206,8 +265,8 @@ configuration. S'il tourne déjà sur le port 3000, l'arrêter avant.
 ### Séquence de lancement
 
 ```bash
-# 1. Backend — une seule fois, pour créer le fichier de configuration de test
-cd ~/abricot-backend
+# 1. Backend — dans le dépôt backend, une seule fois :
+#    créer le fichier de configuration de test
 cp .env.test.example .env.test
 
 # 2. Backend — réinitialiser la base de test et la peupler
@@ -216,8 +275,7 @@ npm run db:test:reset
 # 3. Backend — démarrer le serveur de test (laisser tourner)
 npm run dev:test          # → http://localhost:8001
 
-# 4. Front — dans un autre terminal, port 3000 libre
-cd ~/abricot-front
+# 4. Front — dans ce dépôt, sur un autre terminal, port 3000 libre
 npm run test:e2e
 ```
 
@@ -273,10 +331,72 @@ En cas d'échec, la trace et la capture d'écran sont conservées dans
 | `npm run test:e2e`     | Tests end-to-end Playwright         |
 | `npm run test:e2e:ui`  | Tests end-to-end en mode interactif |
 
+## Documentation
+
+Le dossier [`docs/`](docs/) rassemble les documents de conception :
+
+| Document | Contenu |
+|----------|---------|
+| [`docs/BACKEND_API.md`](docs/BACKEND_API.md) | Contrat de l'API consommée par le front : routes, formats de requête et de réponse |
+| [`docs/DESIGN.md`](docs/DESIGN.md) | Parti pris visuel : palette, typographie, composants |
+| [`docs/maquettes/`](docs/maquettes/) | Maquettes de tous les écrans et de toutes les modales, y compris celles de la génération IA |
+
 ## Fonctionnalités bonus
 
 Éléments implémentés au-delà du cahier des charges. Chaque entrée indique le
 choix technique **et la raison** qui l'a motivé.
+
+### Génération de tâches par IA (RAG — Mistral + LlamaIndex.TS)
+
+Fichiers : `src/lib/ai/` (`index.ts`, `loadContext.ts`, `buildIndex.ts`,
+`retrieve.ts`, `generate.ts`, `errors.ts`, `types.ts`),
+`src/app/api/ai/generate-tasks/route.ts`,
+`src/components/tasks/AiGenerateModal.tsx`,
+`src/components/tasks/ProposedTaskReview.tsx`.
+
+Sur la page d'un projet, le bouton **« IA »** ouvre une modale où l'on décrit en
+langage naturel ce que l'on veut faire (« préparer la mise en production »). Le
+modèle propose une liste de tâches que l'on **revoit avant** toute écriture :
+chaque carte est éditable et supprimable, et rien n'est créé tant que « Ajouter
+les tâches » n'a pas été cliqué. Le modèle n'écrit donc jamais directement en
+base : il propose, l'utilisateur dispose.
+
+**Pourquoi du RAG plutôt qu'un simple appel au modèle.** Une génération à
+l'aveugle produit des tâches génériques et, surtout, repropose ce qui existe
+déjà. Le contexte du projet — nom, description, tâches en cours — est donc
+indexé puis interrogé avec la demande, pour que le modèle voie l'état réel du
+projet avant de proposer quoi que ce soit.
+
+Le pipeline tient en une étape par module, pour rester débogable pas à pas
+(`src/lib/ai/index.ts` orchestre) :
+
+| Étape | Module | Rôle |
+|-------|--------|------|
+| 0 · config | `errors.ts` | Lit `MISTRAL_API_KEY` et échoue tôt et clair si elle manque |
+| 1 · load | `loadContext.ts` | `GET /projects/:id` sur le backend, Bearer posé côté serveur → nom, description, tâches existantes |
+| 2 · index | `buildIndex.ts` | Un `Document` par tâche existante + un pour le projet, puis un `VectorStoreIndex` **en mémoire** (embeddings `mistral-embed`) |
+| 3 · retrieve | `retrieve.ts` | Ramène les 5 passages les plus proches de la demande, dédoublonnés |
+| 4 · generate | `generate.ts` | `mistral-small-latest` à température 0.2, prompt système « JSON pur », puis validation |
+
+L'index est **reconstruit à chaque requête et vit en mémoire**. Le volume en jeu
+— une description et quelques dizaines de tâches — ne justifie pas une base
+vectorielle externe, et cela évite d'avoir à invalider un index persistant à
+chaque tâche créée ou modifiée. Les étapes Mistral sont bornées par un timeout
+dur de 30 secondes.
+
+La sortie du modèle est **validée, pas seulement parsée** : `priority` et
+`status` sont contraints aux valeurs attendues par le backend (à défaut
+`MEDIUM` et `TODO`), `dueDate` doit être une date ISO 8601, et une tâche sans
+titre est rejetée. Une réponse illisible devient une erreur typée plutôt que des
+cartes cassées à l'écran.
+
+**Tout passe par le BFF.** Le client n'appelle que `POST /api/ai/generate-tasks` ;
+la clé Mistral, le prompt système et le contexte RAG restent côté serveur —
+aucun préfixe `NEXT_PUBLIC_`, donc rien dans le bundle navigateur — exactement
+comme le JWT dans le proxy `/api/backend/[...path]`. Chaque erreur du pipeline
+est typée (`AiConfigError`, `ContextError`, `AiQuotaError`, `AiUnavailableError`,
+`AiBadOutputError`) puis traduite en un code et un message français : aucune
+trace d'exécution ne remonte au navigateur.
 
 ### TanStack Query — cache et états des données serveur
 
