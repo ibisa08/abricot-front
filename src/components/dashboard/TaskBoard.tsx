@@ -8,6 +8,7 @@ import {
   PointerSensor,
   closestCorners,
   useDroppable,
+  type CollisionDetection,
   useSensor,
   useSensors,
   type Announcements,
@@ -48,6 +49,39 @@ export interface TaskBoardProps {
  * promettrait un classement que rien ne persiste.
  */
 const NO_SORTING: SortingStrategy = () => null;
+
+/** Identifiants des trois zones de dépôt de colonne, seules cibles retenues. */
+const IDS_COLONNES = new Set<string>(BOARD_STATUSES.map(columnDroppableId));
+
+/**
+ * Détection de collision restreinte aux zones de dépôt de colonne.
+ *
+ * `closestCorners` classe les cibles par distance moyenne entre coins
+ * homologues. Or le contexte mêle deux familles de rectangles sans commune
+ * mesure : les cartes (~321 × 230) et les colonnes, que la grille étire à la
+ * hauteur de la plus haute — au-delà de 2000 px dès quelques tâches. Une
+ * colonne perd alors systématiquement face à n'importe quelle carte, fût-elle
+ * dans une autre colonne : ses coins bas sont trop éloignés du rectangle
+ * déplacé, quand une carte de gabarit voisin obtient un score bien meilleur
+ * malgré plusieurs centaines de pixels d'écart horizontal.
+ *
+ * Sans ce filtre, une colonne vide n'était jamais sélectionnable — ni à la
+ * souris ni au clavier — et pire, un dépôt sur une colonne vide écrivait le
+ * statut de la colonne voisine : celle de la carte qui avait gagné le
+ * classement. Le geste aboutissait donc au mauvais statut, sans le signaler.
+ *
+ * Ne garder que les colonnes rend la comparaison homogène : trois rectangles
+ * de même géométrie, dont un seul contient le point de dépôt. `resolveDropColumn`
+ * continue d'accepter les deux formes d'identifiant, ce qui laisse la voie
+ * ouverte à un futur tri intra-colonne.
+ */
+const detectionColonnes: CollisionDetection = (args) =>
+  closestCorners({
+    ...args,
+    droppableContainers: args.droppableContainers.filter((conteneur) =>
+      IDS_COLONNES.has(String(conteneur.id)),
+    ),
+  });
 
 const SCREEN_READER_INSTRUCTIONS: ScreenReaderInstructions = {
   draggable:
@@ -215,7 +249,7 @@ export function TaskBoard({ tasks }: TaskBoardProps) {
       <DndContext
         id="kanban-tableau-de-bord"
         sensors={sensors}
-        collisionDetection={closestCorners}
+        collisionDetection={detectionColonnes}
         accessibility={accessibility}
         onDragStart={handleDragStart}
         onDragOver={handleDragOver}
