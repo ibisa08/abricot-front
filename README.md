@@ -1,7 +1,6 @@
 # Abricot
 
 **Abricot** est un SaaS de gestion de tâches et de projets collaboratifs.
-Projet réalisé dans le cadre du parcours **OpenClassrooms — Projet 11**.
 
 L'application permet de créer des projets, d'y organiser des tâches, d'assigner
 plusieurs membres, de commenter, et de **générer des tâches assistée par IA**

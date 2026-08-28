@@ -3,12 +3,12 @@
 > Source de vérité visuelle + technique. Les maquettes exportées sont dans `docs/maquettes/`.
 > À lire avec `docs/BACKEND_API.md`.
 
-## 1. Stack retenue (justifiable en soutenance)
+## 1. Stack retenue (et pourquoi)
 
 | Domaine | Choix | Justification |
 |---|---|---|
-| Framework | **Next.js (App Router) + TypeScript** | imposé par la spec ; App Router = techno recommandée |
-| Styles | **Tailwind CSS** | rapidité + tokens centralisés ; suggéré dans la mission |
+| Framework | **Next.js (App Router) + TypeScript** | socle technique retenu ; App Router = mode par défaut |
+| Styles | **Tailwind CSS** | rapidité + tokens centralisés |
 | Primitives UI | **Radix UI** (`Dialog`, `Select`, `DropdownMenu`, `Popover`, `Tabs`) | **accessibilité WCAG AA gratuite** : focus trap, navigation clavier, ARIA corrects sur modales/menus/selects |
 | Icônes | **lucide-react** | cohérent, arbre secouable, `aria-hidden` faciles |
 | Data fetching | **TanStack Query** | cache, invalidation, états loading/error propres |

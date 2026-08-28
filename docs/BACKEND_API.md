@@ -176,7 +176,7 @@ type DashboardStats = {
 };
 ```
 
-> **Dashboard = tâches assignées à MOI** (pas toutes les tâches). La vue Liste et la vue Kanban du dashboard consomment `/dashboard/assigned-tasks`. Le back ne filtre pas "du mois" → filtrer côté front si besoin pour coller à la spec ("tâches du mois par statut").
+> **Dashboard = tâches assignées à MOI** (pas toutes les tâches). La vue Liste et la vue Kanban du dashboard consomment `/dashboard/assigned-tasks`. Le back ne filtre pas "du mois" → filtrer côté front si besoin pour coller à la règle produit ("tâches du mois par statut").
 
 ---
 

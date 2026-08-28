@@ -94,11 +94,12 @@ const SCREEN_READER_INSTRUCTIONS: ScreenReaderInstructions = {
  * Vue Kanban : 3 colonnes par statut avec compteur, et déplacement des tâches
  * d'une colonne à l'autre à la souris comme au clavier.
  *
- * Spec « tâches du mois » : on privilégie les tâches dont l'échéance tombe dans
- * le mois courant, mais on retombe sur l'ensemble des tâches assignées quand
- * aucune n'a d'échéance ce mois-ci (sinon le tableau serait vide). Le mode
- * retenu est affiché explicitement en tête du tableau : sans cet intitulé,
- * l'utilisateur ne peut pas distinguer un tableau filtré d'un tableau complet.
+ * Règle produit « tâches du mois » : on privilégie les tâches dont l'échéance
+ * tombe dans le mois courant, mais on retombe sur l'ensemble des tâches
+ * assignées quand aucune n'a d'échéance ce mois-ci (sinon le tableau serait
+ * vide). Le mode retenu est affiché explicitement en tête du tableau : sans cet
+ * intitulé, l'utilisateur ne peut pas distinguer un tableau filtré d'un tableau
+ * complet.
  */
 export function TaskBoard({ tasks }: TaskBoardProps) {
   /**

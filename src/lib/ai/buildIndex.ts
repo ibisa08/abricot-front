@@ -3,7 +3,7 @@ import { MistralAI, MistralAIEmbedding } from "@llamaindex/mistral";
 import { getMistralApiKey } from "@/lib/ai/errors";
 import type { ProjectContext } from "@/lib/ai/types";
 
-/** Modèle de chat Mistral imposé par la mission. */
+/** Modèle de chat Mistral retenu pour la génération de tâches. */
 const MISTRAL_CHAT_MODEL = "mistral-small-latest" as const;
 
 let configured = false;
