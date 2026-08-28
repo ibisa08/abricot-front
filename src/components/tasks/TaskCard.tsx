@@ -89,8 +89,10 @@ export function TaskCard({ task, variant = "list", className }: TaskCardProps) {
     return (
       <article className={cn(cardBase, className)}>
         <div className="flex items-start justify-between gap-3">
-          <h3 className="font-heading text-base font-semibold text-text">{task.title}</h3>
-          <StatusBadge status={task.status} className="shrink-0" />
+          {/* h4 : la colonne Kanban est un h3 (variante `list` : h3 sous le h2 de TaskList). */}
+          <h4 className="font-heading text-base font-semibold text-text">{task.title}</h4>
+          {/* La colonne Kanban porte déjà le statut : pas de région live ici. */}
+          <StatusBadge status={task.status} announce={false} className="shrink-0" />
         </div>
         {task.description && (
           <p className="mt-1 line-clamp-2 text-sm text-text-muted">{task.description}</p>

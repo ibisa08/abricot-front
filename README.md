@@ -261,3 +261,108 @@ En cas d'échec, la trace et la capture d'écran sont conservées dans
 | `npm run format`      | Prettier (écriture)                   |
 | `npm run test:e2e`    | Tests end-to-end Playwright           |
 | `npm run test:e2e:ui` | Tests end-to-end en mode interactif   |
+
+## Fonctionnalités bonus
+
+Éléments implémentés au-delà du cahier des charges. Chaque entrée indique le
+choix technique **et la raison** qui l'a motivé.
+
+### TanStack Query — cache et états des données serveur
+
+Fichiers : `src/lib/queries.ts`, `src/app/providers.tsx`.
+
+Les données du backend sont de l'état *serveur* : elles sont partagées, elles
+peuvent devenir obsolètes, et plusieurs composants les demandent en même temps.
+Les gérer avec `useState` + `useEffect` obligerait à réécrire, dans chaque
+composant, la déduplication des requêtes, le cache, l'invalidation après
+écriture et les états `isLoading` / `isError`. TanStack Query fournit ces
+mécanismes une fois pour toutes.
+
+- **Clés centralisées** dans l'objet `queryKeys` (`src/lib/queries.ts`).
+  Invalider un cache suppose de désigner la clé exacte : des chaînes littérales
+  disséminées dans les composants divergent tôt ou tard, et une clé mal
+  orthographiée n'échoue pas — elle laisse simplement l'écran afficher des
+  données périmées. Un objet unique rend l'erreur visible à la compilation.
+- **`staleTime` global de 30 s** (`src/app/providers.tsx`). Sans lui, chaque
+  montage de composant redéclenche une requête ; la navigation entre le tableau
+  de bord et un projet en produirait plusieurs par seconde, sans que l'écran
+  change. `useProjectTasks` et `useUserSearch` le portent à 60 s, leurs données
+  bougeant encore moins vite.
+- **`refetchOnWindowFocus` désactivé**. Par défaut, tout retour sur l'onglet
+  relance les requêtes. Dans une application où l'on bascule vers un autre
+  onglet en cours de saisie, cela remplace les données sous un formulaire ou une
+  modale ouverte, pour un gain de fraîcheur nul dans les faits. La fraîcheur est
+  obtenue autrement : chaque mutation invalide explicitement les clés qu'elle
+  affecte.
+
+### Tailwind CSS — approche utility-first et tokens de design
+
+Fichiers : `tailwind.config.ts`, `src/app/globals.css`, `src/app/layout.tsx`.
+
+Les styles sont écrits en classes utilitaires, au plus près du balisage. Ce
+choix supprime la couche de nommage intermédiaire d'un CSS classique — celle où
+l'on invente des noms de classes puis où l'on cherche qui les utilise encore.
+En contrepartie, il expose au risque de voir des valeurs brutes se répandre dans
+le code : c'est ce que la couche de tokens empêche.
+
+Les couleurs déclarées dans `tailwind.config.ts` ne contiennent aucune valeur
+hexadécimale ; elles pointent vers les variables CSS de `:root`
+(`src/app/globals.css`), qui restent la source de vérité unique au runtime. Une
+couleur se corrige à un seul endroit.
+
+Les polices — **Manrope** pour les titres, **Inter** pour le corps — sont
+chargées par `next/font/google` et exposées comme variables CSS
+(`--font-manrope`, `--font-inter`). Elles sont donc auto-hébergées : pas de
+requête vers un domaine tiers, et pas de saut de mise en page au chargement.
+
+**Les tokens de couleur ont été calibrés pour respecter le contraste WCAG AA**,
+et les ratios mesurés sont notés en commentaire à côté de chaque variable. La
+palette compte deux oranges plutôt qu'un seul, précisément pour cette raison :
+`--color-primary` (#D3590B) plafonne à 4,03:1 sur blanc, ce qui satisfait le
+seuil de 3:1 des grands titres et des éléments graphiques mais pas les 4,5:1
+exigés pour du texte courant ; `--color-primary-text` (#C2410C, 5,17:1) prend le
+relais dès que l'orange sert de petit texte. Les couleurs de texte des badges de
+statut ont été assombries pour tenir 4,5:1 sur leur propre fond, et non
+seulement sur blanc. L'alternative aurait été de changer la couleur de marque ou
+d'accepter un échec de contraste.
+
+### Autocomplétion sur la sélection de collaborateurs
+
+Fichiers : `src/components/ui/UserMultiSelect.tsx`, `src/lib/queries.ts`
+(`useUserSearch`), route backend `GET /users/search`.
+
+Ajouter un contributeur à un projet suppose de désigner un utilisateur par son
+email — une chaîne exacte, que l'utilisateur devrait retranscrire sans faute
+dans un champ libre. La moindre coquille produit une erreur que rien ne permet
+de corriger à l'aveugle. L'autocomplétion transforme cette saisie en
+**sélection** dans une liste de personnes existantes.
+
+Fonctionnement : la frappe alimente une recherche débouncée (~300 ms, à partir
+de 2 caractères) sur `GET /users/search` ; les résultats s'affichent dans une
+liste navigable aux flèches ↑/↓ et validable à Entrée ; la sélection est
+multiple et se matérialise en puces retirables, `Backspace` sur un champ vide
+retirant la dernière. Le débounce évite une requête par frappe, qui chargerait
+le backend pour des résultats jetés aussitôt.
+
+Le composant sert deux cas avec deux clés d'identité (prop `mode`) : `emails`
+pour les contributeurs d'un projet, `ids` pour les assignés d'une tâche. Dans ce
+second cas, une prop `options` fournit la liste fermée des membres du projet et
+le filtrage se fait localement, sans appel réseau — on ne peut assigner une
+tâche qu'à quelqu'un qui appartient déjà au projet.
+
+L'ensemble suit le motif ARIA *combobox* sur une base Radix Popover, pour rester
+utilisable au clavier et avec un lecteur d'écran.
+
+### Authentification Google (OAuth 2.0)
+
+Connexion via Google en plus du couple email / mot de passe, le JWT restant dans
+un cookie httpOnly hors de portée du JavaScript navigateur. Flux détaillé,
+fichiers concernés et codes d'erreur : voir la section
+[Authentification](#authentification).
+
+### Tests end-to-end (Playwright)
+
+Les parcours critiques sont couverts par une suite Playwright s'exécutant contre
+une base de test isolée, distincte de la base de développement. Prérequis,
+séquence de lancement et conventions : voir la section
+[Tests end-to-end (Playwright)](#tests-end-to-end-playwright).
